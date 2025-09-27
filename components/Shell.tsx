@@ -178,6 +178,23 @@ export function Shell({ children }: ShellProps) {
     }
   };
 
+  const getRoleTranslationKey = (role: UserRole) => {
+    switch (role) {
+      case 'SUPER_ADMIN':
+        return 'users.superAdmin';
+      case 'ADMIN':
+        return 'users.admin';
+      case 'INSTRUCTOR':
+        return 'users.instructor';
+      case 'COMMANDER':
+        return 'users.commander';
+      case 'TRAINEE':
+        return 'users.trainee';
+      default:
+        return 'users.trainee';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Mobile sidebar backdrop */}
@@ -272,7 +289,7 @@ export function Shell({ children }: ShellProps) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{session.user.name}</p>
                       <Badge variant={getRoleBadgeVariant(userRole)} className="text-xs">
-                        {t(`users.${userRole.toLowerCase()}`)}
+                        {t(getRoleTranslationKey(userRole))}
                       </Badge>
                     </div>
                   </div>
