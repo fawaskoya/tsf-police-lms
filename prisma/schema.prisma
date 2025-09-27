@@ -1,0 +1,410 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  INSTRUCTOR
+  COMMANDER
+  TRAINEE
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CourseModality {
+  ELearning
+  Classroom
+  Blended
+}
+
+enum ModuleKind {
+  VIDEO
+  H5P
+  SCORM
+  PDF
+  QUIZ
+}
+
+enum EnrollmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
+}
+
+enum QuestionType {
+  MCQ
+  MSQ
+  TRUEFALSE
+  NUMERIC
+  SHORT
+}
+
+enum SessionMode {
+  CLASSROOM
+  FIELD
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum AttendanceMethod {
+  QR
+  MANUAL
+  IMPORT
+}
+
+model User {
+  id        String     @id @default(cuid())
+  qid       String?    @unique // Qatar ID
+  badgeNo   String?    @unique // Badge number
+  rank      String?    // Military/police rank
+  unit      String?    // Department/unit
+  firstName String
+  lastName  String
+  email     String     @unique
+  phone     String?
+  password  String?
+  role      UserRole   @default(TRAINEE)
+  locale    String     @default("ar")
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  createdCourses      Course[]         @relation("CourseCreator")
+  enrollments         Enrollment[]
+  examAttempts        Attempt[]
+  issuedCertificates  Certificate[]
+  instructedSessions  Session[]        @relation("SessionInstructor")
+  attendance          Attendance[]
+  capturedAttendance  Attendance[]     @relation("AttendanceCapturer")
+  auditLogs           AuditLog[]       @relation("AuditActor")
+  uploadedFiles       FileObject[]     @relation("FileUploader")
+  sentNotifications   Notification[]   @relation("NotificationSender")
+  receivedNotifications Notification[] @relation("NotificationRecipient")
+
+  @@map("users")
+}
+
+model Course {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  titleAr      String
+  titleEn      String
+  summaryAr    String?
+  summaryEn    String?
+  status       CourseStatus  @default(DRAFT)
+  version      String        @default("1.0")
+  modality     CourseModality
+  durationMins Int
+  createdById  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  creator      User           @relation("CourseCreator", fields: [createdById], references: [id])
+  modules      Module[]
+  enrollments  Enrollment[]
+  exams        Exam[]
+  sessions     Session[]
+  certificates Certificate[]
+
+  @@map("courses")
+}
+
+model Module {
+  id           String      @id @default(cuid())
+  courseId     String
+  order        Int
+  kind         ModuleKind
+  uri          String      // File path or URL
+  durationMins Int
+  metadata     Json?       // Additional module-specific data
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  course       Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("modules")
+}
+
+model Enrollment {
+  id        String           @id @default(cuid())
+  userId    String
+  courseId  String
+  assignedAt DateTime        @default(now())
+  dueAt     DateTime?
+  status    EnrollmentStatus @default(ASSIGNED)
+  progress  Float            @default(0) // 0-100 percentage
+  completedAt DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Exam {
+  id             String    @id @default(cuid())
+  courseId       String
+  titleAr        String
+  titleEn        String
+  timeLimitMins  Int
+  totalMarks     Int
+  randomize      Boolean   @default(false)
+  negativeMarking Boolean  @default(false)
+  lockdown       Boolean   @default(false)
+  isPublished    Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  course         Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions      Question[]
+  attempts       Attempt[]
+
+  @@map("exams")
+}
+
+model Question {
+  id        String       @id @default(cuid())
+  examId    String
+  type      QuestionType
+  stemAr    String
+  stemEn    String
+  options   Json?        // For MCQ/MSQ options
+  answer    Json         // Correct answer(s)
+  marks     Int          @default(1)
+  bankTag   String?      // For question bank categorization
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relations
+  exam      Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model Attempt {
+  id           String    @id @default(cuid())
+  userId       String
+  examId       String
+  startedAt    DateTime  @default(now())
+  submittedAt  DateTime?
+  score        Float?
+  detail       Json?     // Detailed answers and scoring
+  ip           String?
+  userAgent    String?
+  proctorMeta  Json?     // Proctoring metadata
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam         Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@map("attempts")
+}
+
+model Certificate {
+  id         String    @id @default(cuid())
+  userId     String
+  courseId   String
+  issuedAt   DateTime  @default(now())
+  expiresAt  DateTime?
+  qrCode     String    @unique
+  serial     String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("certificates")
+}
+
+model Session {
+  id                String      @id @default(cuid())
+  courseId          String
+  titleAr           String
+  titleEn           String
+  room              String?
+  startsAt          DateTime
+  endsAt            DateTime
+  instructorId      String
+  capacity          Int
+  mode              SessionMode
+  attendancePolicy  Json?       // Policy configuration
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  course            Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructor        User        @relation("SessionInstructor", fields: [instructorId], references: [id])
+  attendance        Attendance[]
+
+  @@map("sessions")
+}
+
+model Attendance {
+  id           String            @id @default(cuid())
+  sessionId    String
+  userId       String
+  status       AttendanceStatus
+  capturedBy   String
+  capturedAt   DateTime          @default(now())
+  method       AttendanceMethod  @default(MANUAL)
+  notes        String?
+
+  // Relations
+  session      Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capturer     User              @relation("AttendanceCapturer", fields: [capturedBy], references: [id])
+
+  @@unique([sessionId, userId])
+  @@map("attendance")
+}
+
+model AuditLog {
+  id            String    @id @default(cuid())
+  actorId       String
+  action        String    // CREATE, UPDATE, DELETE, LOGIN, etc.
+  entity        String    // User, Course, Exam, etc.
+  entityId      String?
+  ts            DateTime  @default(now())
+  ip            String?
+  metadata      Json?
+  immutableHash String    @unique // SHA256 hash for integrity
+
+  // Relations
+  actor         User      @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model ReportView {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  sql         String
+  description String?
+  isPublic    Boolean  @default(false)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("report_views")
+}
+
+model FileObject {
+  id          String   @id @default(cuid())
+  bucket      String
+  key         String
+  size        Int
+  checksum    String
+  contentType String
+  uploaderId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  uploader    User     @relation("FileUploader", fields: [uploaderId], references: [id])
+
+  @@unique([bucket, key])
+  @@map("file_objects")
+}
+
+enum NotificationType {
+  COURSE_ENROLLMENT
+  COURSE_COMPLETION
+  EXAM_AVAILABLE
+  EXAM_SUBMITTED
+  EXAM_GRADED
+  CERTIFICATE_ISSUED
+  SESSION_REMINDER
+  SYSTEM_ANNOUNCEMENT
+  CUSTOM_MESSAGE
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Notification {
+  id          String              @id @default(cuid())
+  type        NotificationType
+  titleAr     String
+  titleEn     String
+  messageAr   String
+  messageEn   String
+  priority    NotificationPriority @default(MEDIUM)
+  channels    NotificationChannel[]
+  recipientId String
+  senderId    String?
+  isRead      Boolean             @default(false)
+  readAt      DateTime?
+  sentAt      DateTime            @default(now())
+  scheduledAt DateTime?
+  metadata    Json?               // Additional data for the notification (e.g., courseId, examId)
+  expiresAt   DateTime?
+
+  // Relations
+  recipient   User                @relation("NotificationRecipient", fields: [recipientId], references: [id])
+  sender      User?               @relation("NotificationSender", fields: [senderId], references: [id])
+
+  @@map("notifications")
+}
+
+model NotificationTemplate {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  type        NotificationType
+  titleAr     String
+  titleEn     String
+  messageAr   String
+  messageEn   String
+  variables   Json?             // Available variables for template substitution
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("notification_templates")
+}
