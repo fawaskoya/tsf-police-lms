@@ -4,9 +4,6 @@ const withNextIntl = require('next-intl/plugin')(
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    _next_intl_trailing_slash: 'false',
-  },
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client'],
   },

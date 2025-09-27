@@ -55,28 +55,28 @@ export function DashboardStats({ t }: DashboardStatsProps) {
         <StatCard
           title={t('dashboard.activeTrainees')}
           value={mockStats.activeTrainees.toLocaleString()}
-          icon={Users}
+          icon="Users"
           trend={{ value: 12, label: '+12% vs last month' }}
           className="border-l-4 border-l-green-500"
         />
         <StatCard
           title={t('dashboard.completionRate')}
           value={`${mockStats.completionRate}%`}
-          icon={TrendingUp}
+          icon="TrendingUp"
           trend={{ value: 5.2, label: '+5.2% vs last month' }}
           className="border-l-4 border-l-green-500"
         />
         <StatCard
           title={t('dashboard.overdueCerts')}
           value={mockStats.overdueCerts.toString()}
-          icon={AlertTriangle}
+          icon="AlertTriangle"
           trend={{ value: -8, label: '8% vs last month' }}
           className="border-l-4 border-l-yellow-500"
         />
         <StatCard
           title={t('dashboard.sessionsToday')}
           value={mockStats.sessionsToday.toString()}
-          icon={Clock}
+          icon="Clock"
           className="border-l-4 border-l-gray-500"
         />
       </div>
@@ -93,28 +93,28 @@ export function DashboardStats({ t }: DashboardStatsProps) {
         <StatCard
           title={t('dashboard.activeTrainees')}
           value={stats.activeTrainees?.toLocaleString() || '0'}
-          icon={Users}
+          icon="Users"
           trend={{ value: 12, label: '+12% vs last month' }}
           className="border-l-4 border-l-green-500"
         />
         <StatCard
           title={t('dashboard.completionRate')}
           value={`${stats.completionRate || 0}%`}
-          icon={TrendingUp}
+          icon="TrendingUp"
           trend={{ value: 5.2, label: '+5.2% vs last month' }}
           className="border-l-4 border-l-green-500"
         />
         <StatCard
           title={t('dashboard.overdueCerts')}
           value={stats.overdueCerts?.toString() || '0'}
-          icon={AlertTriangle}
+          icon="AlertTriangle"
           trend={{ value: -8, label: '8% vs last month' }}
           className="border-l-4 border-l-yellow-500"
         />
         <StatCard
           title={t('dashboard.sessionsToday')}
           value={stats.sessionsToday?.toString() || '0'}
-          icon={Clock}
+          icon="Clock"
           className="border-l-4 border-l-gray-500"
         />
       </div>
@@ -123,9 +123,8 @@ export function DashboardStats({ t }: DashboardStatsProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <ProgressCard
           title={t('dashboard.examPassRate')}
-          value={`${stats.examPassRate || 0}%`}
-          icon={CheckCircle}
-          progress={stats.examPassRate || 0}
+          value={stats.examPassRate || 0}
+          max={100}
           className="border-l-4 border-l-blue-500"
         />
         <Card className="border-l-4 border-l-purple-500">

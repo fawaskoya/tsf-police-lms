@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       // Sessions today
       db.session.count({
         where: {
-          startTime: {
+          startsAt: {
             gte: new Date(new Date().setHours(0, 0, 0, 0)),
             lt: new Date(new Date().setHours(23, 59, 59, 999))
           }
@@ -65,12 +65,13 @@ export async function GET(request: NextRequest) {
       db.auditLog.findMany({
         take: 10,
         orderBy: {
-          createdAt: 'desc'
+          ts: 'desc'
         },
         include: {
-          user: {
+          actor: {
             select: {
-              name: true,
+              firstName: true,
+              lastName: true,
               email: true
             }
           }
@@ -114,9 +115,9 @@ export async function GET(request: NextRequest) {
     const formattedActivity = recentActivity.map(activity => ({
       id: activity.id,
       action: activity.action,
-      user: activity.user.name || activity.user.email,
-      details: activity.details || '',
-      time: activity.createdAt.toISOString(),
+      user: `${activity.actor.firstName} ${activity.actor.lastName}` || activity.actor.email,
+      details: activity.metadata || '',
+      time: activity.ts.toISOString(),
     }));
 
     return NextResponse.json({
