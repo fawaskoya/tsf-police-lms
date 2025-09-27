@@ -55,6 +55,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Exclude the PWA manifest completely (with and without querystring)
-  matcher: ['/((?!api|_next|manifest\\.json(?:$|\\?|/)|.*\\..*).*)']
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 };

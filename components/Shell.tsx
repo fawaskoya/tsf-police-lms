@@ -181,7 +181,7 @@ export function Shell({ children }: ShellProps) {
   const getRoleTranslationKey = (role: UserRole) => {
     switch (role) {
       case 'SUPER_ADMIN':
-        return 'users.superAdmin';
+        return 'users.super_admin';
       case 'ADMIN':
         return 'users.admin';
       case 'INSTRUCTOR':
