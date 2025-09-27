@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, UserStatus, CourseStatus, CourseModality, QuestionType } from '@prisma/client';
+import { PrismaClient, UserRole, UserStatus, CourseStatus, CourseModality, QuestionType, ModuleKind } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -175,11 +175,11 @@ async function main() {
 
   // Create course modules
   const modulesData = [
-    { courseId: createdCourses[0].id, titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work', order: 1, kind: 'VIDEO', uri: '/videos/police-intro.mp4', durationMins: 30 },
-    { courseId: createdCourses[0].id, titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties', order: 2, kind: 'PDF', uri: '/docs/rights-duties.pdf', durationMins: 45 },
-    { courseId: createdCourses[0].id, titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws', order: 3, kind: 'VIDEO', uri: '/videos/basic-laws.mp4', durationMins: 35 },
-    { courseId: createdCourses[1].id, titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts', order: 1, kind: 'VIDEO', uri: '/videos/security-concepts.mp4', durationMins: 25 },
-    { courseId: createdCourses[1].id, titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management', order: 2, kind: 'PDF', uri: '/docs/emergency-guide.pdf', durationMins: 40 },
+    { courseId: createdCourses[0].id, titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work', order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/police-intro.mp4', durationMins: 30 },
+    { courseId: createdCourses[0].id, titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties', order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/rights-duties.pdf', durationMins: 45 },
+    { courseId: createdCourses[0].id, titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws', order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/basic-laws.mp4', durationMins: 35 },
+    { courseId: createdCourses[1].id, titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts', order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/security-concepts.mp4', durationMins: 25 },
+    { courseId: createdCourses[1].id, titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management', order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/emergency-guide.pdf', durationMins: 40 },
   ];
 
   for (const moduleData of modulesData) {
@@ -218,15 +218,8 @@ async function main() {
 
   const createdExams = [];
   for (const examData of exams) {
-    const exam = await prisma.exam.upsert({
-      where: {
-        titleAr_courseId: {
-          titleAr: examData.titleAr,
-          courseId: examData.courseId,
-        },
-      },
-      update: {},
-      create: examData,
+    const exam = await prisma.exam.create({
+      data: examData,
     });
     createdExams.push(exam);
   }
@@ -238,7 +231,7 @@ async function main() {
     {
       questionAr: 'ما هو الدور الأساسي للشرطة في المجتمع؟',
       questionEn: 'What is the primary role of police in society?',
-      type: QuestionType.MULTIPLE_CHOICE,
+      type: QuestionType.MCQ,
       marks: 10,
       options: [
         { optionAr: 'الحفاظ على الأمن والنظام', optionEn: 'Maintain security and order' },
@@ -251,7 +244,7 @@ async function main() {
     {
       questionAr: 'ما هي الحقوق الأساسية للمواطن أمام الشرطة؟',
       questionEn: 'What are the basic rights of citizens before police?',
-      type: QuestionType.MULTIPLE_CHOICE,
+      type: QuestionType.MCQ,
       marks: 15,
       options: [
         { optionAr: 'الحق في الصمت', optionEn: 'Right to silence' },
@@ -264,7 +257,7 @@ async function main() {
     {
       questionAr: 'هل يمكن للشرطي استخدام القوة المفرطة؟',
       questionEn: 'Can a police officer use excessive force?',
-      type: QuestionType.TRUE_FALSE,
+      type: QuestionType.TRUEFALSE,
       marks: 10,
       correctAnswer: 'false',
     },
@@ -272,47 +265,17 @@ async function main() {
 
   for (let i = 0; i < questions1.length; i++) {
     const q = questions1[i];
-    const question = await prisma.question.upsert({
-      where: {
-        examId_order: {
-          examId: createdExams[0].id,
-          order: i + 1,
-        },
-      },
-      update: {},
-      create: {
+    const question = await prisma.question.create({
+      data: {
         examId: createdExams[0].id,
-        order: i + 1,
-        questionAr: q.questionAr,
-        questionEn: q.questionEn,
+        stemAr: q.questionAr,
+        stemEn: q.questionEn,
         type: q.type,
         marks: q.marks,
-        correctAnswer: q.correctAnswer,
-        options: q.options ? {
-          create: q.options.map((opt, idx) => ({
-            order: idx + 1,
-            optionAr: opt.optionAr,
-            optionEn: opt.optionEn,
-          })),
-        } : undefined,
+        answer: q.correctAnswer,
+        options: q.options,
       },
     });
-
-    // Update correct answer reference
-    if (q.options) {
-      const correctOption = await prisma.questionOption.findFirst({
-        where: {
-          questionId: question.id,
-          order: q.correctAnswer === 'option1' ? 1 : q.correctAnswer === 'option2' ? 2 : q.correctAnswer === 'option3' ? 3 : 4,
-        },
-      });
-      if (correctOption) {
-        await prisma.question.update({
-          where: { id: question.id },
-          data: { correctAnswer: correctOption.id },
-        });
-      }
-    }
   }
 
   console.log('✅ Questions created');
@@ -331,8 +294,8 @@ async function main() {
         create: {
           userId: trainee.id,
           courseId: course.id,
-          enrolledAt: new Date(),
-          status: 'ACTIVE',
+          assignedAt: new Date(),
+          status: 'ASSIGNED',
         },
       });
     }
@@ -347,37 +310,9 @@ async function main() {
         examId: createdExams[0].id,
         userId: trainee.id,
         score: Math.floor(Math.random() * 80) + 20, // Random score 20-100
-        maxScore: 100,
-        percentage: Math.floor(Math.random() * 80) + 20,
-        timeSpent: Math.floor(Math.random() * 1800) + 600, // 10-40 minutes
-        autoSubmitted: false,
       },
     });
 
-    // Create some sample answers
-    const questions = await prisma.question.findMany({
-      where: { examId: createdExams[0].id },
-      include: { options: true },
-    });
-
-    for (const question of questions) {
-      const isCorrect = Math.random() > 0.3; // 70% correct answers
-      const marks = isCorrect ? question.marks : 0;
-
-      if (question.options && question.options.length > 0) {
-        const randomOption = question.options[Math.floor(Math.random() * question.options.length)];
-        await prisma.answer.create({
-          data: {
-            attemptId: attempt.id,
-            questionId: question.id,
-            answer: randomOption.id,
-            isCorrect,
-            marks,
-            timeSpent: Math.floor(Math.random() * 120) + 30, // 30-150 seconds
-          },
-        });
-      }
-    }
   }
 
   console.log('✅ Sample attempts and answers created');
