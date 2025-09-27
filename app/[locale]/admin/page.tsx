@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DashboardStats } from '@/components/DashboardStats';
+import { ProgressCard } from '@/components/ProgressCard';
 import { 
   BookOpen, 
   Calendar, 
