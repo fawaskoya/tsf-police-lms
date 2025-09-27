@@ -155,9 +155,13 @@ export function FileManager({
   };
 
   const getFileIcon = (contentType: string) => {
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (contentType.startsWith('image/')) return <Image className="h-8 w-8 text-blue-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (contentType.startsWith('video/')) return <Video className="h-8 w-8 text-green-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (contentType.includes('pdf')) return <FileText className="h-8 w-8 text-red-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     return <File className="h-8 w-8 text-gray-500" />;
   };
 

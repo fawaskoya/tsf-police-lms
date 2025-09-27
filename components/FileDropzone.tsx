@@ -69,9 +69,13 @@ export function FileDropzone({
   };
 
   const getFileIcon = (file: File) => {
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (file.type.startsWith('image/')) return <Image className="h-8 w-8 text-blue-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (file.type.startsWith('video/')) return <Video className="h-8 w-8 text-green-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     if (file.type.includes('pdf')) return <FileText className="h-8 w-8 text-red-500" />;
+    // eslint-disable-next-line jsx-a11y/alt-text
     return <File className="h-8 w-8 text-gray-500" />;
   };
 
@@ -136,6 +140,7 @@ export function FileDropzone({
                   <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                 </div>
                 {file.preview && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={file.preview}
                     alt={file.name}
