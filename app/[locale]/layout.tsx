@@ -49,7 +49,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#6B0023" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/api/manifest.json" />
+        <link rel="manifest" href="/api/manifest" />
       </head>
       <body
         className={`${inter.variable} ${notoKufiArabic.variable} ${tajawal.variable} antialiased`}
