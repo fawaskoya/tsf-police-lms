@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !hasPermission(session.user.role, 'dashboard:read')) {
+    if (!session || !hasPermission(session.user.role, 'reports:read')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
