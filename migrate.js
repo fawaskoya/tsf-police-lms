@@ -5,15 +5,10 @@ async function runMigration() {
   try {
     console.log('🚀 Starting database migration...');
 
-    // Check if .env.local exists and has DATABASE_URL
-    if (!fs.existsSync('.env.local')) {
-      console.error('❌ .env.local file not found. Please create it with your DATABASE_URL.');
-      process.exit(1);
-    }
-
-    const envContent = fs.readFileSync('.env.local', 'utf8');
-    if (!envContent.includes('DATABASE_URL=')) {
-      console.error('❌ DATABASE_URL not found in .env.local file.');
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL environment variable not set.');
+      console.error('Please run: export DATABASE_URL="your_database_url_here"');
       process.exit(1);
     }
 
