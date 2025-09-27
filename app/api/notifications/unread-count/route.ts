@@ -6,6 +6,8 @@ import { hasPermission } from '@/lib/permissions';
 import { handleApiError, AuthorizationError } from '@/lib/errorHandler';
 import logger from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

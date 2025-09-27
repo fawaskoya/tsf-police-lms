@@ -7,6 +7,8 @@ import { handleApiError, AuthorizationError, ValidationError } from '@/lib/error
 import { renderToBuffer } from '@react-pdf/renderer';
 import logger from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 // For CSV generation
 function generateCSV(data: any[], headers: string[]): string {
   const csvRows = [];
