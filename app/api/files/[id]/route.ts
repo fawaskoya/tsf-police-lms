@@ -39,15 +39,25 @@ export async function GET(
       throw new NotFoundError('File not found', { fileId: params.id });
     }
 
-    let fileStream: Buffer | NodeJS.ReadableStream;
+    let fileBuffer: Buffer;
 
     if (process.env.NODE_ENV === 'production') {
       // Get file from Cloudflare R2
-      fileStream = await FileStorageService.getFileStream(fileRecord.key);
+      const stream = await FileStorageService.getFileStream(fileRecord.key);
+      // Convert stream to buffer for NextResponse
+      const chunks: Uint8Array[] = [];
+      if (stream) {
+        for await (const chunk of stream as any) {
+          chunks.push(chunk);
+        }
+        fileBuffer = Buffer.concat(chunks);
+      } else {
+        throw new Error('File stream is empty');
+      }
     } else {
       // Get file from local filesystem
       const filePath = path.join(process.cwd(), fileRecord.key);
-      fileStream = await fs.readFile(filePath);
+      fileBuffer = await fs.readFile(filePath);
     }
 
     logger.info('File served successfully', {
@@ -58,7 +68,7 @@ export async function GET(
     });
 
     // Return file with appropriate headers
-    return new NextResponse(fileStream as any, {
+    return new NextResponse(fileBuffer as any, {
       headers: {
         'Content-Type': fileRecord.contentType,
         'Content-Length': fileRecord.size.toString(),

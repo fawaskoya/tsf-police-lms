@@ -175,23 +175,16 @@ async function main() {
 
   // Create course modules
   const modulesData = [
-    { courseId: createdCourses[0].id, titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work', order: 1 },
-    { courseId: createdCourses[0].id, titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties', order: 2 },
-    { courseId: createdCourses[0].id, titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws', order: 3 },
-    { courseId: createdCourses[1].id, titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts', order: 1 },
-    { courseId: createdCourses[1].id, titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management', order: 2 },
+    { courseId: createdCourses[0].id, titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work', order: 1, kind: 'VIDEO', uri: '/videos/police-intro.mp4', durationMins: 30 },
+    { courseId: createdCourses[0].id, titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties', order: 2, kind: 'PDF', uri: '/docs/rights-duties.pdf', durationMins: 45 },
+    { courseId: createdCourses[0].id, titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws', order: 3, kind: 'VIDEO', uri: '/videos/basic-laws.mp4', durationMins: 35 },
+    { courseId: createdCourses[1].id, titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts', order: 1, kind: 'VIDEO', uri: '/videos/security-concepts.mp4', durationMins: 25 },
+    { courseId: createdCourses[1].id, titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management', order: 2, kind: 'PDF', uri: '/docs/emergency-guide.pdf', durationMins: 40 },
   ];
 
   for (const moduleData of modulesData) {
-    await prisma.module.upsert({
-      where: {
-        courseId_order: {
-          courseId: moduleData.courseId,
-          order: moduleData.order,
-        },
-      },
-      update: {},
-      create: moduleData,
+    await prisma.module.create({
+      data: moduleData,
     });
   }
 

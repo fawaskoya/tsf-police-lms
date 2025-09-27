@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Bell, Check, CheckCheck, Clock, AlertTriangle, Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuHeader,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -37,6 +37,7 @@ interface Notification {
 
 export function NotificationDropdown() {
   const t = useTranslations();
+  const locale = useLocale();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -143,7 +144,7 @@ export function NotificationDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuHeader className="flex items-center justify-between px-4 py-2">
+        <DropdownMenuLabel className="flex items-center justify-between px-4 py-2">
           <h3 className="font-semibold">{t('notifications.title')}</h3>
           {unreadCount > 0 && (
             <Button
@@ -156,7 +157,7 @@ export function NotificationDropdown() {
               {t('notifications.markAllRead')}
             </Button>
           )}
-        </DropdownMenuHeader>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <ScrollArea className="h-96">
@@ -185,21 +186,21 @@ export function NotificationDropdown() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h4 className="text-sm font-medium truncate">
-                            {t.locale === 'ar' ? notification.titleAr : notification.titleEn}
+                            {locale === 'ar' ? notification.titleAr : notification.titleEn}
                           </h4>
                           {!notification.isRead && (
                             <div className="h-2 w-2 bg-primary rounded-full ml-2" />
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {t.locale === 'ar' ? notification.messageAr : notification.messageEn}
+                          {locale === 'ar' ? notification.messageAr : notification.messageEn}
                         </p>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center text-xs text-muted-foreground">
                             <Clock className="h-3 w-3 mr-1" />
                             {formatDistanceToNow(new Date(notification.sentAt), {
                               addSuffix: true,
-                              locale: t.locale === 'ar' ? ar : undefined,
+                              locale: locale === 'ar' ? ar : undefined,
                             })}
                           </div>
                           {notification.sender && (

@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     const totalCertificates = await db.certificate.count();
     const certificatesThisMonth = await db.certificate.count({
       where: {
-        issueDate: {
+        issuedAt: {
           gte: start,
           lte: end,
         },
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
 
       const [newUsers, newCertificates, newAttempts] = await Promise.all([
         db.user.count({ where: { createdAt: { gte: monthStart, lte: monthEnd } } }),
-        db.certificate.count({ where: { issueDate: { gte: monthStart, lte: monthEnd } } }),
+        db.certificate.count({ where: { issuedAt: { gte: monthStart, lte: monthEnd } } }),
         db.attempt.count({ where: { createdAt: { gte: monthStart, lte: monthEnd } } }),
       ]);
 

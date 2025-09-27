@@ -358,7 +358,7 @@ export class NotificationService {
     options: Partial<NotificationData> = {}
   ) {
     const templates = this.getNotificationTemplates();
-    const template = templates[templateType];
+    const template = templates[templateType as keyof typeof templates];
 
     if (!template) {
       throw new Error(`Notification template not found: ${templateType}`);

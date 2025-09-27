@@ -104,6 +104,8 @@ export async function POST(request: NextRequest) {
     const notificationData = {
       ...validatedData,
       type: validatedData.type as NotificationType,
+      priority: validatedData.priority as NotificationPriority,
+      channels: validatedData.channels as NotificationChannel[],
       senderId: session.user.id,
       scheduledAt: validatedData.scheduledAt ? new Date(validatedData.scheduledAt) : undefined,
       expiresAt: validatedData.expiresAt ? new Date(validatedData.expiresAt) : undefined,
