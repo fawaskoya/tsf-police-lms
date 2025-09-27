@@ -169,7 +169,7 @@
     "inactive": "غير نشط",
     "suspended": "معلق",
     "superAdmin": "مدير عام",
-    "super_admin": "مدير عام",
+    "super_admin": "مدير عام", // Super Admin role
     "admin": "مدير",
     "instructor": "مدرب",
     "commander": "قائد",
