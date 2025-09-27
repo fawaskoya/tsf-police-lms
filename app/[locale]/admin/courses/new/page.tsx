@@ -64,6 +64,7 @@ export default function NewCoursePage() {
   const handleSubmit = async () => {
     try {
       const response = await fetch('/api/courses', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

@@ -89,6 +89,7 @@ export function FileManager({
         }));
 
         const response = await fetch('/api/files/upload', {
+          credentials: 'include',
           method: 'POST',
           body: formData,
         });

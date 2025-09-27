@@ -45,7 +45,9 @@ export function NotificationDropdown() {
   const { data: unreadCountData } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
-      const response = await fetch('/api/notifications/unread-count');
+      const response = await fetch('/api/notifications/unread-count', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch unread count');
       return response.json();
     },
@@ -56,7 +58,9 @@ export function NotificationDropdown() {
   const { data: notificationsData, isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const response = await fetch('/api/notifications?limit=10');
+      const response = await fetch('/api/notifications?limit=10', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch notifications');
       return response.json();
     },
@@ -80,6 +84,7 @@ export function NotificationDropdown() {
   const markAllAsReadMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/notifications/mark-all-read', {
+        credentials: 'include',
         method: 'POST',
       });
       if (!response.ok) throw new Error('Failed to mark all as read');

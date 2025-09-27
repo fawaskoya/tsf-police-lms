@@ -68,7 +68,9 @@ export default function ExamsPage() {
   const { data: examsData, isLoading: examsLoading } = useQuery({
     queryKey: ['exams'],
     queryFn: async () => {
-      const response = await fetch('/api/exams');
+      const response = await fetch('/api/exams', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch exams');
       return response.json();
     },
@@ -77,7 +79,9 @@ export default function ExamsPage() {
   const { data: questionsData, isLoading: questionsLoading } = useQuery({
     queryKey: ['questions'],
     queryFn: async () => {
-      const response = await fetch('/api/questions');
+      const response = await fetch('/api/questions', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch questions');
       return response.json();
     },

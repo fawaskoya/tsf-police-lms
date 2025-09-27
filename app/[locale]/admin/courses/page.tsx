@@ -55,7 +55,9 @@ export default function CoursesPage() {
   const { data: coursesData, isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const response = await fetch('/api/courses');
+      const response = await fetch('/api/courses', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch courses');
       return response.json();
     },

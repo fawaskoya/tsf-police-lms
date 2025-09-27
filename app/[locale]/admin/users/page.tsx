@@ -65,7 +65,9 @@ export default function UsersPage() {
   const { data: usersData, isLoading, refetch } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await fetch('/api/users');
+      const response = await fetch('/api/users', {
+        credentials: 'include',
+      });
       if (!response.ok) throw new Error('Failed to fetch users');
       return response.json();
     },
@@ -538,6 +540,7 @@ function ImportForm({ onSuccess }: { onSuccess: () => void }) {
       }));
 
       const response = await fetch('/api/users/import', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transformedUsers),

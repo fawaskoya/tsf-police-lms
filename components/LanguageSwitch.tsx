@@ -42,6 +42,7 @@ export function LanguageSwitch() {
     // Set cookie via API call for server-side persistence
     try {
       await fetch('/api/language', {
+        credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
