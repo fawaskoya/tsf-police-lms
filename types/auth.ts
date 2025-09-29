@@ -1,38 +1,10 @@
-import { Role } from '@/lib/roles';
-
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: Role;
+  role: string;
   unit?: string | null;
   rank?: string | null;
   locale: string;
   image?: string | null;
-}
-
-declare module 'next-auth' {
-  interface Session {
-    user: User;
-  }
-
-  interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: Role;
-    unit?: string;
-    rank?: string;
-    locale: string;
-    image?: string | null;
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    role: Role;
-    unit?: string;
-    rank?: string;
-    locale: string;
-  }
 }
