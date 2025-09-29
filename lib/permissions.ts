@@ -126,7 +126,7 @@ const rolePermissions: Record<Role, Permission[]> = {
   ],
 };
 
-export function hasPermission(role: Role, permission: Permission): boolean {
+export function hasPermission(role: string, permission: Permission): boolean {
   const normalizedRole = typeof role === 'string' && role.includes('_') 
     ? prismaRoleToRole(role) 
     : role as Role;
