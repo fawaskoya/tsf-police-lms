@@ -73,8 +73,17 @@ export const authOptions: NextAuthOptions = {
         };
 
         const user = demoUsers[credentials.email as keyof typeof demoUsers];
+        
+        console.log('Auth debug:', {
+          email: credentials.email,
+          passwordProvided: !!credentials.password,
+          passwordMatch: credentials.password === 'Passw0rd!',
+          userFound: !!user,
+          userEmail: user?.email
+        });
 
         if (!user || credentials.password !== 'Passw0rd!') {
+          console.log('Auth failed:', { userFound: !!user, passwordMatch: credentials.password === 'Passw0rd!' });
           return null;
         }
 

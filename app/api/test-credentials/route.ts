@@ -19,10 +19,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Test the authorize function directly
+    console.log('Testing credentials:', { email, password: password ? 'PROVIDED' : 'NOT_PROVIDED' });
+    
     const user = await credentialsProvider.authorize(
       { email, password, csrfToken: '' }, // csrfToken is not used in authorize logic for demo
       {} as any // req object is not used in demo authorize logic
     );
+    
+    console.log('Authorize result:', user ? 'USER_FOUND' : 'NO_USER');
 
     if (user) {
       return NextResponse.json({
