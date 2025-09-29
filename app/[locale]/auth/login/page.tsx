@@ -54,14 +54,14 @@ export default function LoginPage() {
 
   const getDashboardPath = (role: string): string => {
     switch (role) {
-      case 'SUPER_ADMIN':
-      case 'ADMIN':
+      case 'super_admin':
+      case 'admin':
         return '/admin';
-      case 'INSTRUCTOR':
+      case 'instructor':
         return '/instructor';
-      case 'COMMANDER':
+      case 'commander':
         return '/commander';
-      case 'TRAINEE':
+      case 'trainee':
         return '/trainee';
       default:
         return '/admin';
