@@ -11,26 +11,35 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'super@kbn.local'
+        },
+        password: {
+          label: 'Password',
+          type: 'password'
+        },
+        csrfToken: {
+          label: 'CSRF Token',
+          type: 'text'
+        }
       },
       async authorize(credentials, req) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
+        // For demo purposes - always authenticate any valid credentials
+        if (credentials?.email && credentials?.password) {
+          return {
+            id: '1',
+            email: credentials.email,
+            name: 'Demo User',
+            role: 'super_admin',
+            unit: 'Command',
+            rank: 'Colonel',
+            locale: 'ar',
+            image: null,
+          } as any;
         }
-
-        // For local development without database, use demo users
-        // Always return success for demo purposes
-        return {
-          id: '1',
-          email: credentials.email || 'super@kbn.local',
-          name: 'Test User',
-          role: 'super_admin',
-          unit: 'Command',
-          rank: 'Colonel',
-          locale: 'ar',
-          image: null,
-        } as any;
+        return null;
       },
     }),
   ],
