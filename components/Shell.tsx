@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import React, { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 // UserRole import removed - using normalized Role from lib/roles
 import { isSuperAdmin, prismaRoleToRole } from '@/lib/roles';
@@ -120,13 +119,44 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export function Shell({ children }: ShellProps) {
-  const { data: session } = useSession();
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const locale = useLocale() as 'ar' | 'en';
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isRTL = getDirection(locale) === 'rtl';
   const t = useTranslations();
   const router = useRouter();
 
+  useEffect(() => {
+    // Fetch current session
+    fetch('/api/auth/session', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        setSession(data.user ? { user: data.user } : null);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Failed to fetch session:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setSession(null);
+      router.push(`/${locale}/auth/login`);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  if (loading) {
+    return <>{children}</>;
+  }
 
   if (!session?.user) {
     return <>{children}</>;
@@ -283,7 +313,7 @@ export function Shell({ children }: ShellProps) {
                           </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => signOut()}>
+                        <DropdownMenuItem onClick={handleLogout}>
                           {t('navigation.logout')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import jwt from 'jsonwebtoken';
 import createMiddleware from 'next-intl/middleware';
 import { canAccessRoute } from '@/lib/permissions';
 import { Role } from '@/lib/roles';
@@ -26,10 +26,16 @@ export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Get token for protected routes
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET
-  });
+  const authToken = request.cookies.get('auth-token')?.value;
+  let token: any = null;
+
+  if (authToken) {
+    try {
+      token = jwt.verify(authToken, process.env.NEXTAUTH_SECRET || 'fallback-secret');
+    } catch (error) {
+      console.log('Invalid token in middleware:', error);
+    }
+  }
 
   // Check route access permissions
   if (pathname.startsWith('/admin') || pathname.startsWith('/commander') || pathname.startsWith('/instructor') || pathname.startsWith('/trainee')) {

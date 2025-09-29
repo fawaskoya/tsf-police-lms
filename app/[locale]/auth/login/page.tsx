@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -41,25 +40,30 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        csrfToken,
-        redirect: false,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+        credentials: 'include',
       });
 
-      if (result?.error) {
-        setError(t('auth.invalidCredentials'));
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || t('auth.invalidCredentials'));
       } else {
-        // Get session to determine redirect path
-        const session = await getSession();
-        if (session?.user) {
-          const userRole = session.user.role;
-          const dashboardPath = getDashboardPath(userRole);
-          router.push(`/${locale}${dashboardPath}`);
-        }
+        // Login successful - redirect based on role
+        const userRole = data.user.role;
+        const dashboardPath = getDashboardPath(userRole);
+        router.push(`/${locale}${dashboardPath}`);
       }
     } catch (error) {
+      console.error('Login error:', error);
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
