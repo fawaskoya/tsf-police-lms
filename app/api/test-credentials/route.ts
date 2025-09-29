@@ -6,27 +6,39 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
     
-    // Get the credentials provider
-    const credentialsProvider = authOptions.providers.find(
-      (provider) => provider.id === 'credentials'
-    ) as ReturnType<typeof CredentialsProvider>;
+    // Test the demo users directly
+    const demoUsers = {
+      'super@kbn.local': {
+        id: '1',
+        email: 'super@kbn.local',
+        name: 'أحمد الكبير',
+        role: 'super_admin' as const,
+        unit: 'Command',
+        rank: 'Colonel',
+        locale: 'ar',
+        status: 'ACTIVE' as const,
+      },
+    };
 
-    if (!credentialsProvider || !credentialsProvider.authorize) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Credentials provider not found or misconfigured' 
-      }, { status: 500 });
+    const user = demoUsers[email as keyof typeof demoUsers];
+    
+    console.log('Direct test:', {
+      email,
+      passwordProvided: !!password,
+      passwordMatch: password === 'Passw0rd!',
+      userFound: !!user,
+      userEmail: user?.email
+    });
+
+    if (!user || password !== 'Passw0rd!') {
+      console.log('Direct test failed:', { userFound: !!user, passwordMatch: password === 'Passw0rd!' });
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid credentials',
+        provided: { email, password: password ? 'PROVIDED' : 'NOT_PROVIDED' },
+        timestamp: new Date().toISOString()
+      }, { status: 401 });
     }
-
-    // Test the authorize function directly
-    console.log('Testing credentials:', { email, password: password ? 'PROVIDED' : 'NOT_PROVIDED' });
-    
-    const user = await credentialsProvider.authorize(
-      { email, password, csrfToken: '' }, // csrfToken is not used in authorize logic for demo
-      {} as any // req object is not used in demo authorize logic
-    );
-    
-    console.log('Authorize result:', user ? 'USER_FOUND' : 'NO_USER');
 
     if (user) {
       return NextResponse.json({
