@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { normalizeRole, prismaRoleToRole } from './roles';
 
 export const authOptions: NextAuthOptions = {
+  useSecureCookies: process.env.NODE_ENV === 'production',
   providers: [
     CredentialsProvider({
       name: 'credentials',
