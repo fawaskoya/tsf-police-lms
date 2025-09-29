@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -18,12 +18,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations();
 
+  useEffect(() => {
+    // Fetch CSRF token on mount
+    fetch('/api/auth/csrf', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setCsrfToken(data.csrfToken))
+      .catch(err => console.error('Failed to fetch CSRF token:', err));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!csrfToken) {
+      setError('CSRF token not loaded');
+      return;
+    }
     setIsLoading(true);
     setError('');
 
@@ -31,6 +44,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
+        csrfToken,
         redirect: false,
       });
 
@@ -174,7 +188,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || !csrfToken}
                   />
                 </div>
                 <div className="space-y-2">
@@ -186,7 +200,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || !csrfToken}
                   />
                 </div>
                 {error && (
@@ -197,7 +211,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isLoading || !csrfToken}
                 >
                   {isLoading ? (
                     <>
