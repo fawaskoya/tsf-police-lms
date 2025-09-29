@@ -1,10 +1,10 @@
-import { UserRole } from '@prisma/client';
+import { Role } from '@/lib/roles';
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: UserRole;
+  role: Role;
   unit?: string | null;
   rank?: string | null;
   locale: string;
@@ -20,7 +20,7 @@ declare module 'next-auth' {
     id: string;
     email: string;
     name: string;
-    role: UserRole;
+    role: Role;
     unit?: string;
     rank?: string;
     locale: string;
@@ -30,7 +30,7 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    role: UserRole;
+    role: Role;
     unit?: string;
     rank?: string;
     locale: string;

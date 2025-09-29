@@ -18,9 +18,39 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStats({ t }: DashboardStatsProps) {
+  const useMock = 
+    process.env.NODE_ENV !== 'production' &&
+    ((process.env.NEXT_PUBLIC_USE_MOCK ?? '').trim() === '1' ||
+     (process.env.USE_MOCK ?? '').toLowerCase() === 'true');
+
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
+      if (useMock) {
+        // Return mock data in development when explicitly enabled
+        return {
+          stats: {
+            activeTrainees: 1247,
+            completionRate: 87.5,
+            overdueCerts: 23,
+            sessionsToday: 8,
+            examPassRate: 92.3,
+            totalUsers: 1500,
+            totalCourses: 25,
+            totalExams: 45,
+          },
+          recentActivity: [
+            {
+              id: '1',
+              action: 'completed course',
+              user: 'أحمد الكبير',
+              details: 'Police Fundamentals',
+              time: new Date().toISOString(),
+            },
+          ],
+        };
+      }
+      
       const response = await fetch('/api/dashboard/stats', {
         credentials: 'include',
       });
@@ -40,45 +70,13 @@ export function DashboardStats({ t }: DashboardStatsProps) {
     );
   }
 
-  if (error) {
-    // Fallback to mock data if API fails
-    const mockStats = {
-      activeTrainees: 1247,
-      completionRate: 87.5,
-      overdueCerts: 23,
-      sessionsToday: 8,
-      examPassRate: 92.3,
-    };
-
+  if (error && !useMock) {
+    // Only show error in production when not using mocks
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title={t('dashboard.activeTrainees')}
-          value={mockStats.activeTrainees.toLocaleString()}
-          icon="Users"
-          trend={{ value: 12, label: '+12% vs last month' }}
-          className="border-l-4 border-l-green-500"
-        />
-        <StatCard
-          title={t('dashboard.completionRate')}
-          value={`${mockStats.completionRate}%`}
-          icon="TrendingUp"
-          trend={{ value: 5.2, label: '+5.2% vs last month' }}
-          className="border-l-4 border-l-green-500"
-        />
-        <StatCard
-          title={t('dashboard.overdueCerts')}
-          value={mockStats.overdueCerts.toString()}
-          icon="AlertTriangle"
-          trend={{ value: -8, label: '8% vs last month' }}
-          className="border-l-4 border-l-yellow-500"
-        />
-        <StatCard
-          title={t('dashboard.sessionsToday')}
-          value={mockStats.sessionsToday.toString()}
-          icon="Clock"
-          className="border-l-4 border-l-gray-500"
-        />
+        <div className="col-span-full p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800">Failed to load dashboard data. Please try again later.</p>
+        </div>
       </div>
     );
   }

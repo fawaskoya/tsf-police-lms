@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
-import { UserRole } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
+import { isSuperAdmin, prismaRoleToRole } from '@/lib/roles';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -46,7 +47,7 @@ interface NavigationItem {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  roles: UserRole[];
+  roles: string[];
 }
 
 const navigationItems: NavigationItem[] = [
@@ -54,67 +55,67 @@ const navigationItems: NavigationItem[] = [
     href: '',
     label: 'navigation.dashboard',
     icon: LayoutDashboard,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'COMMANDER', 'TRAINEE'],
+    roles: ['super_admin', 'admin', 'instructor', 'commander', 'trainee'],
   },
   {
     href: '/courses',
     label: 'navigation.courses',
     icon: BookOpen,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'TRAINEE'],
+    roles: ['super_admin', 'admin', 'instructor', 'trainee'],
   },
   {
     href: '/exams',
     label: 'navigation.exams',
     icon: FileText,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'TRAINEE'],
+    roles: ['super_admin', 'admin', 'instructor', 'trainee'],
   },
   {
     href: '/sessions',
     label: 'navigation.sessions',
     icon: Calendar,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'COMMANDER', 'TRAINEE'],
+    roles: ['super_admin', 'admin', 'instructor', 'commander', 'trainee'],
   },
   {
     href: '/reports',
     label: 'navigation.reports',
     icon: BarChart3,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'COMMANDER'],
+    roles: ['super_admin', 'admin', 'commander'],
   },
   {
     href: '/certificates',
     label: 'navigation.certificates',
     icon: Award,
-    roles: ['SUPER_ADMIN', 'ADMIN', 'COMMANDER', 'TRAINEE'],
+    roles: ['super_admin', 'admin', 'commander', 'trainee'],
   },
   {
     href: '/users',
     label: 'navigation.users',
     icon: Users,
-    roles: ['SUPER_ADMIN', 'ADMIN'],
+    roles: ['super_admin', 'admin'],
   },
   {
     href: '/settings',
     label: 'navigation.settings',
     icon: Settings,
-    roles: ['SUPER_ADMIN', 'ADMIN'],
+    roles: ['super_admin', 'admin'],
   },
   {
     href: '/audit-log',
     label: 'navigation.auditLog',
     icon: Shield,
-    roles: ['SUPER_ADMIN'],
+    roles: ['super_admin'],
   },
   {
     href: '/my-learning',
     label: 'navigation.myLearning',
     icon: GraduationCap,
-    roles: ['TRAINEE'],
+    roles: ['trainee'],
   },
   {
     href: '/compliance',
     label: 'navigation.compliance',
     icon: Target,
-    roles: ['COMMANDER'],
+    roles: ['commander'],
   },
 ];
 
@@ -132,63 +133,64 @@ export function Shell({ children }: ShellProps) {
   }
 
   const userRole = session.user.role;
+  const normalizedRole = prismaRoleToRole(userRole);
 
   // Get the role-based route prefix
   const getRolePrefix = (role: string) => {
     switch (role) {
-      case 'SUPER_ADMIN':
-      case 'ADMIN':
+      case 'super_admin':
+      case 'admin':
         return '/admin';
-      case 'INSTRUCTOR':
+      case 'instructor':
         return '/instructor';
-      case 'COMMANDER':
+      case 'commander':
         return '/commander';
-      case 'TRAINEE':
+      case 'trainee':
         return '/trainee';
       default:
         return '/admin';
     }
   };
 
-  const rolePrefix = getRolePrefix(userRole);
+  const rolePrefix = getRolePrefix(normalizedRole);
 
   // Filter navigation items for this role and add proper prefixes
   const filteredNavigation = navigationItems
-    .filter(item => item.roles.includes(userRole))
+    .filter(item => item.roles.includes(normalizedRole))
     .map(item => ({
       ...item,
       href: item.href === '' ? rolePrefix : `${rolePrefix}${item.href}`,
     }));
 
 
-  const getRoleBadgeVariant = (role: UserRole) => {
+  const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case 'SUPER_ADMIN':
+      case 'super_admin':
         return 'destructive';
-      case 'ADMIN':
+      case 'admin':
         return 'default';
-      case 'INSTRUCTOR':
+      case 'instructor':
         return 'accent';
-      case 'COMMANDER':
+      case 'commander':
         return 'secondary';
-      case 'TRAINEE':
+      case 'trainee':
         return 'outline';
       default:
         return 'outline';
     }
   };
 
-  const getRoleTranslationKey = (role: UserRole) => {
+  const getRoleTranslationKey = (role: string) => {
     switch (role) {
-      case 'SUPER_ADMIN':
+      case 'super_admin':
         return 'users.super_admin';
-      case 'ADMIN':
+      case 'admin':
         return 'users.admin';
-      case 'INSTRUCTOR':
+      case 'instructor':
         return 'users.instructor';
-      case 'COMMANDER':
+      case 'commander':
         return 'users.commander';
-      case 'TRAINEE':
+      case 'trainee':
         return 'users.trainee';
       default:
         return 'users.trainee';
@@ -288,8 +290,8 @@ export function Shell({ children }: ShellProps) {
                     </DropdownMenu>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{session.user.name}</p>
-                      <Badge variant={getRoleBadgeVariant(userRole)} className="text-xs">
-                        {t(getRoleTranslationKey(userRole))}
+                      <Badge variant={getRoleBadgeVariant(normalizedRole)} className="text-xs">
+                        {t(getRoleTranslationKey(normalizedRole))}
                       </Badge>
                     </div>
                   </div>

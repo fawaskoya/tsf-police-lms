@@ -10,13 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  INSTRUCTOR
-  COMMANDER
-  TRAINEE
-}
+// Using string roles for consistency with normalized role system
+// enum UserRole {
+//   SUPER_ADMIN
+//   ADMIN
+//   INSTRUCTOR
+//   COMMANDER
+//   TRAINEE
+// }
 
 enum UserStatus {
   ACTIVE
@@ -87,7 +88,7 @@ model User {
   email     String     @unique
   phone     String?
   password  String?
-  role      UserRole   @default(TRAINEE)
+  role      String     @default("trainee")
   locale    String     @default("ar")
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now())

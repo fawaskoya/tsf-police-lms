@@ -17,7 +17,7 @@ const updateUserSchema = z.object({
   lastName: z.string().min(1),
   email: z.string().email(),
   phone: z.string().optional(),
-  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'COMMANDER', 'TRAINEE']),
+  role: z.enum(['super_admin', 'admin', 'instructor', 'commander', 'trainee']),
   locale: z.string().default('ar'),
   status: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
 });
@@ -233,7 +233,7 @@ export async function DELETE(
     }
 
     // Prevent deleting super admin accounts (except by another super admin)
-    if (existingUser.role === 'SUPER_ADMIN' && session.user.role !== 'SUPER_ADMIN') {
+    if (existingUser.role === 'super_admin' && session.user.role !== 'super_admin') {
       throw new AuthorizationError('Only super admins can delete other super admins');
     }
 

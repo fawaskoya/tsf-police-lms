@@ -1,6 +1,29 @@
 {
   "extends": ["next/core-web-vitals"],
   "rules": {
-    "react/no-unescaped-entities": "off"
-  }
+    "react/no-unescaped-entities": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value='super.admin']",
+        "message": "Use 'super_admin' (snake_case) for role strings."
+      },
+      {
+        "selector": "Literal[value='super-admin']",
+        "message": "Use 'super_admin' (snake_case) for role strings."
+      },
+      {
+        "selector": "Literal[value='superAdmin']",
+        "message": "Use 'super_admin' (snake_case) for role strings."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**/*"],
+      "rules": {
+        "no-restricted-syntax": "off"
+      }
+    }
+  ]
 }

@@ -34,7 +34,7 @@ export async function POST(
     }
 
     // Check if user can take exams (must be TRAINEE role)
-    if (session.user.role !== 'TRAINEE') {
+    if (session.user.role !== 'trainee') {
       throw new AuthorizationError('Only trainees can submit exams');
     }
 

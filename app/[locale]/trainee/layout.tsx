@@ -2,7 +2,7 @@ import { Shell } from '@/components/Shell';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { UserRole } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
 
 interface TraineeLayoutProps {
   children: React.ReactNode;
@@ -24,7 +24,7 @@ export default async function TraineeLayout({
   const userRole = session.user.role;
 
   // Check if user has trainee access
-  if (userRole !== 'TRAINEE') {
+  if (userRole !== 'trainee') {
     redirect(`/${locale}/unauthorized`);
   }
 

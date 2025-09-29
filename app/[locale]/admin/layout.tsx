@@ -2,7 +2,7 @@ import { Shell } from '@/components/Shell';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { UserRole } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
 
 interface AdminLayoutProps {
   children: React.ReactNode;

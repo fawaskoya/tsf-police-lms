@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import createMiddleware from 'next-intl/middleware';
 import { canAccessRoute } from '@/lib/permissions';
-import { UserRole } from '@prisma/client';
+import { Role } from '@/lib/roles';
+// UserRole import removed - using normalized Role from lib/roles
 
 const intlMiddleware = createMiddleware({
   // A list of all locales that are supported
@@ -40,7 +41,7 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const userRole = token.role as UserRole;
+    const userRole = token.role as Role;
     const routePath = pathname.replace(/^\/[a-z]{2}/, '');
 
     if (!canAccessRoute(userRole, routePath)) {

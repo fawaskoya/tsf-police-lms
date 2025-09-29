@@ -34,7 +34,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { UserRole, UserStatus } from '@prisma/client';
+import { UserStatus } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
 import { Plus, MoreHorizontal, Edit, Trash2, Download, Upload, FileText } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -49,7 +50,7 @@ type User = {
   lastName: string;
   email: string;
   phone: string | null;
-  role: UserRole;
+  role: string;
   locale: string;
   status: UserStatus;
   createdAt: string;
@@ -98,17 +99,17 @@ export default function UsersPage() {
       accessorKey: 'role',
       header: t('users.role'),
       cell: ({ row }) => {
-        const role = row.getValue('role') as UserRole;
-        const roleLabels = {
-          SUPER_ADMIN: t('users.superAdmin'),
-          ADMIN: t('users.admin'),
-          INSTRUCTOR: t('users.instructor'),
-          COMMANDER: t('users.commander'),
-          TRAINEE: t('users.trainee'),
+        const role = row.getValue('role') as string;
+        const roleLabels: Record<string, string> = {
+          super_admin: t('users.super_admin'),
+          admin: t('users.admin'),
+          instructor: t('users.instructor'),
+          commander: t('users.commander'),
+          trainee: t('users.trainee'),
         };
         return (
           <Badge variant={getRoleBadgeVariant(role)}>
-            {roleLabels[role]}
+            {roleLabels[role] || role}
           </Badge>
         );
       },
@@ -201,17 +202,17 @@ export default function UsersPage() {
     },
   ];
 
-  const getRoleBadgeVariant = (role: UserRole) => {
+  const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case 'SUPER_ADMIN':
+      case 'super_admin':
         return 'destructive';
-      case 'ADMIN':
+      case 'admin':
         return 'default';
-      case 'INSTRUCTOR':
+      case 'instructor':
         return 'accent';
-      case 'COMMANDER':
+      case 'commander':
         return 'secondary';
-      case 'TRAINEE':
+      case 'trainee':
         return 'outline';
       default:
         return 'outline';
@@ -339,7 +340,7 @@ function UserForm({
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role: user?.role || 'TRAINEE' as UserRole,
+    role: user?.role || 'trainee',
     unit: user?.unit || '',
     rank: user?.rank || '',
     badgeNo: user?.badgeNo || '',
@@ -409,17 +410,17 @@ function UserForm({
         <Label htmlFor="role">{t('users.role')}</Label>
         <Select
           value={formData.role}
-          onValueChange={(value) => setFormData({ ...formData, role: value as UserRole })}
+          onValueChange={(value) => setFormData({ ...formData, role: value })}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="TRAINEE">{t('users.trainee')}</SelectItem>
-            <SelectItem value="INSTRUCTOR">{t('users.instructor')}</SelectItem>
-            <SelectItem value="COMMANDER">{t('users.commander')}</SelectItem>
-            <SelectItem value="ADMIN">{t('users.admin')}</SelectItem>
-            <SelectItem value="SUPER_ADMIN">{t('users.superAdmin')}</SelectItem>
+            <SelectItem value="trainee">{t('users.trainee')}</SelectItem>
+            <SelectItem value="instructor">{t('users.instructor')}</SelectItem>
+            <SelectItem value="commander">{t('users.commander')}</SelectItem>
+            <SelectItem value="admin">{t('users.admin')}</SelectItem>
+            <SelectItem value="super_admin">{t('users.super_admin')}</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, UserStatus, CourseStatus, CourseModality, QuestionType, ModuleKind } from '@prisma/client';
+import { PrismaClient, UserStatus, CourseStatus, CourseModality, QuestionType, ModuleKind } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -19,7 +19,7 @@ async function main() {
       lastName: 'الكبير',
       email: 'super@kbn.local',
       password: await bcrypt.hash('Passw0rd!', 12),
-      role: UserRole.SUPER_ADMIN,
+      role: 'super_admin',
       locale: 'ar',
       status: UserStatus.ACTIVE,
     },
@@ -38,7 +38,7 @@ async function main() {
       lastName: 'العبدالله',
       email: 'admin@kbn.local',
       password: await bcrypt.hash('Passw0rd!', 12),
-      role: UserRole.ADMIN,
+      role: 'admin',
       locale: 'ar',
       status: UserStatus.ACTIVE,
     },
@@ -57,7 +57,7 @@ async function main() {
       lastName: 'السعد',
       email: 'instructor@kbn.local',
       password: await bcrypt.hash('Passw0rd!', 12),
-      role: UserRole.INSTRUCTOR,
+      role: 'instructor',
       locale: 'ar',
       status: UserStatus.ACTIVE,
     },
@@ -76,7 +76,7 @@ async function main() {
       lastName: 'المنصوري',
       email: 'commander@kbn.local',
       password: await bcrypt.hash('Passw0rd!', 12),
-      role: UserRole.COMMANDER,
+      role: 'commander',
       locale: 'ar',
       status: UserStatus.ACTIVE,
     },
@@ -104,7 +104,7 @@ async function main() {
       create: {
         ...data,
         password: await bcrypt.hash('Passw0rd!', 12),
-        role: UserRole.TRAINEE,
+        role: 'trainee',
         locale: 'ar',
         status: UserStatus.ACTIVE,
       },

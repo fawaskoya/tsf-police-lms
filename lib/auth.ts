@@ -2,7 +2,8 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { db } from './db';
 import bcrypt from 'bcryptjs';
-import { UserRole } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
+import { normalizeRole, prismaRoleToRole } from './roles';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,7 +24,7 @@ export const authOptions: NextAuthOptions = {
             id: '1',
             email: 'super@kbn.local',
             name: 'أحمد الكبير',
-            role: 'SUPER_ADMIN' as const,
+            role: 'super_admin' as const,
             unit: 'Command',
             rank: 'Colonel',
             locale: 'ar',
@@ -33,7 +34,7 @@ export const authOptions: NextAuthOptions = {
             id: '2',
             email: 'admin@kbn.local',
             name: 'محمد العبدالله',
-            role: 'ADMIN' as const,
+            role: 'admin' as const,
             unit: 'Training',
             rank: 'Major',
             locale: 'ar',
@@ -43,7 +44,7 @@ export const authOptions: NextAuthOptions = {
             id: '3',
             email: 'instructor@kbn.local',
             name: 'فاطمة السعد',
-            role: 'INSTRUCTOR' as const,
+            role: 'instructor' as const,
             unit: 'Academy',
             rank: 'Captain',
             locale: 'ar',
@@ -53,7 +54,7 @@ export const authOptions: NextAuthOptions = {
             id: '4',
             email: 'commander@kbn.local',
             name: 'خالد المنصوري',
-            role: 'COMMANDER' as const,
+            role: 'commander' as const,
             unit: 'Operations',
             rank: 'Lieutenant Colonel',
             locale: 'ar',
@@ -63,7 +64,7 @@ export const authOptions: NextAuthOptions = {
             id: '5',
             email: 'trainee@kbn.local',
             name: 'سارة الأحمد',
-            role: 'TRAINEE' as const,
+            role: 'trainee' as const,
             unit: 'Patrol',
             rank: 'Sergeant',
             locale: 'ar',
@@ -96,17 +97,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        const raw = (user as any).role ?? token.role;
+        token.role = normalizeRole(raw) ?? 'trainee';
         token.unit = user.unit;
         token.rank = user.rank;
         token.locale = user.locale;
+      } else {
+        token.role = normalizeRole((token as any).role) ?? 'trainee';
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub as string;
-        session.user.role = token.role as UserRole;
+        session.user.role = normalizeRole((token as any).role) ?? 'trainee' as any;
         session.user.unit = (token.unit as string | null) || undefined;
         session.user.rank = (token.rank as string | null) || undefined;
         session.user.locale = token.locale as string;

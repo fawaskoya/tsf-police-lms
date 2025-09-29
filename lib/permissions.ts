@@ -1,4 +1,5 @@
-import { UserRole } from '@prisma/client';
+// UserRole import removed - using normalized Role from lib/roles
+import { Role, prismaRoleToRole } from './roles';
 
 export type Permission =
   | 'users:read'
@@ -29,8 +30,8 @@ export type Permission =
   | 'notifications:read'
   | 'notifications:write';
 
-const rolePermissions: Record<UserRole, Permission[]> = {
-  SUPER_ADMIN: [
+const rolePermissions: Record<Role, Permission[]> = {
+  super_admin: [
     'users:read',
     'users:write',
     'users:delete',
@@ -59,7 +60,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     'notifications:read',
     'notifications:write',
   ],
-  ADMIN: [
+  admin: [
     'users:read',
     'users:write',
     'users:delete',
@@ -87,7 +88,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     'notifications:read',
     'notifications:write',
   ],
-  INSTRUCTOR: [
+  instructor: [
     'courses:read',
     'courses:write',
     'exams:read',
@@ -102,7 +103,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     'files:upload',
     'notifications:read',
   ],
-  COMMANDER: [
+  commander: [
     'users:read',
     'courses:read',
     'exams:read',
@@ -113,7 +114,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     'files:read',
     'notifications:read',
   ],
-  TRAINEE: [
+  trainee: [
     'courses:read',
     'exams:read',
     'sessions:read',
@@ -125,11 +126,14 @@ const rolePermissions: Record<UserRole, Permission[]> = {
   ],
 };
 
-export function hasPermission(role: UserRole, permission: Permission): boolean {
-  return rolePermissions[role]?.includes(permission) ?? false;
+export function hasPermission(role: Role, permission: Permission): boolean {
+  const normalizedRole = typeof role === 'string' && role.includes('_') 
+    ? prismaRoleToRole(role) 
+    : role as Role;
+  return rolePermissions[normalizedRole]?.includes(permission) ?? false;
 }
 
-export function canAccessRoute(role: UserRole, route: string): boolean {
+export function canAccessRoute(role: Role, route: string): boolean {
   const routePermissions: Record<string, Permission[]> = {
     '/admin': ['users:read'],
     '/admin/users': ['users:read'],

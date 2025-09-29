@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { hasPermission } from '@/lib/permissions';
+import { isSuperAdmin } from '@/lib/roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,10 +25,10 @@ export async function GET(request: NextRequest) {
       certificates,
       recentActivity
     ] = await Promise.all([
-      // Active trainees (users with role TRAINEE)
+      // Active trainees (users with role trainee)
       db.user.count({
         where: {
-          role: 'TRAINEE',
+          role: 'trainee',
           status: 'ACTIVE'
         }
       }),
