@@ -32,10 +32,6 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!csrfToken) {
-      setError('CSRF token not loaded');
-      return;
-    }
     setIsLoading(true);
     setError('');
 
@@ -192,7 +188,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    disabled={isLoading || !csrfToken}
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -204,7 +200,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    disabled={isLoading || !csrfToken}
+                    disabled={isLoading}
                   />
                 </div>
                 {error && (
@@ -215,7 +211,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading || !csrfToken}
+                  disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
