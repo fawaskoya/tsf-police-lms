@@ -55,6 +55,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "cookie": "^1.0.2",
     "date-fns": "^3.0.6",
     "framer-motion": "^10.16.16",
     "jsonwebtoken": "^9.0.2",
@@ -79,6 +80,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/cookie": "^1.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
