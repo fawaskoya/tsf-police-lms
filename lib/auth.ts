@@ -20,13 +20,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // For local development without database, use demo users
-        console.log('Auth check for:', credentials.email, 'using demo users');
-
-        // Simple test auth for local development
-        console.log('Authorize called with:', credentials.email, credentials.password);
-
-        // For local testing, always return success
-        console.log('Auth successful for local testing');
+        // Always return success for demo purposes
         return {
           id: '1',
           email: credentials.email || 'super@kbn.local',
@@ -71,5 +65,4 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
 };
