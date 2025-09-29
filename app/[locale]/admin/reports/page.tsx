@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatCard } from '@/components/StatCard';
@@ -40,7 +39,7 @@ async function getReportSummary() {
 }
 
 export default async function ReportsPage() {
-  const sessionAuth = await getServerSession(authOptions);
+  const sessionAuth = await getServerSession();
   const t = await getTranslations();
 
   if (!sessionAuth) {

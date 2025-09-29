@@ -1,6 +1,5 @@
 import { Shell } from '@/components/Shell';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { redirect } from 'next/navigation';
 // UserRole import removed - using normalized Role from lib/roles
 
@@ -15,7 +14,7 @@ export default async function CommanderLayout({
   children,
   params: { locale },
 }: CommanderLayoutProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
 
   if (!session) {
     redirect(`/${locale}/auth/login`);

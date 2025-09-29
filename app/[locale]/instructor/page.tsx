@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatCard } from '@/components/StatCard';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default async function InstructorDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
 
   // Mock data - in production this would come from API
   const mockStats = {

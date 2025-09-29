@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { NotificationService } from '@/lib/notifications';
 import { hasPermission } from '@/lib/permissions';
 import { handleApiError, AuthorizationError } from '@/lib/errorHandler';
@@ -10,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');

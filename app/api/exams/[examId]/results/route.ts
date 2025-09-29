@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { db } from '@/lib/db';
 import { handleApiError, AuthorizationError, NotFoundError } from '@/lib/errorHandler';
 import logger from '@/lib/logger';
@@ -16,7 +15,7 @@ export async function GET(
       examId: params.examId,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');

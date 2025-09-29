@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { db } from '@/lib/db';
 import { createAuditLog } from '@/lib/audit';
 import { hasPermission } from '@/lib/permissions';
@@ -20,7 +19,7 @@ const createQuestionSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session || !hasPermission(session.user.role, 'exams:read')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -50,7 +49,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session || !hasPermission(session.user.role, 'exams:write')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

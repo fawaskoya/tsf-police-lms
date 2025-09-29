@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { db } from '@/lib/db';
 import { createAuditLog } from '@/lib/audit';
 import { hasPermission } from '@/lib/permissions';
@@ -33,7 +32,7 @@ export async function GET(
       userId: params.id,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');
@@ -94,7 +93,7 @@ export async function PUT(
       userId: params.id,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');
@@ -201,7 +200,7 @@ export async function DELETE(
       userId: params.id,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');

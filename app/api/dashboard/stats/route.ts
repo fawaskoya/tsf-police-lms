@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { db } from '@/lib/db';
 import { hasPermission } from '@/lib/permissions';
 import { isSuperAdmin } from '@/lib/roles';
@@ -9,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session || !hasPermission(session.user.role, 'reports:read')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

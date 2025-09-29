@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,7 @@ interface HomePageProps {
 }
 
 export default async function HomePage({ params: { locale } }: HomePageProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
   const t = await getTranslations();
 
   if (session) {

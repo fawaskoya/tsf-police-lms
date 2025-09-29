@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ import {
 // Dashboard data is now fetched from API via DashboardStats component
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
   const t = await getTranslations();
 
   return (

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { NotificationService } from '@/lib/notifications';
 import { hasPermission } from '@/lib/permissions';
 import { handleApiError, AuthorizationError } from '@/lib/errorHandler';
@@ -13,7 +12,7 @@ export async function POST(request: NextRequest) {
       method: request.method,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');

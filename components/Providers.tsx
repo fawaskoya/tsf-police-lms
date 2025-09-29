@@ -1,6 +1,5 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -23,12 +22,10 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <ErrorBoundary>
-          {children}
-          <Toaster richColors position="top-right" />
-        </ErrorBoundary>
-      </SessionProvider>
+      <ErrorBoundary>
+        {children}
+        <Toaster richColors position="top-right" />
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProgressCard } from '@/components/ProgressCard';
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export default async function TraineeDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
   const t = await getTranslations();
 
   // Mock data - in production this would come from API

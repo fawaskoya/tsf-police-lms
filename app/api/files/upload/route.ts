@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-server';
 import { db } from '@/lib/db';
 import { FileStorageService } from '@/lib/storage';
 import { createAuditLog } from '@/lib/audit';
@@ -22,7 +21,7 @@ export async function POST(request: NextRequest) {
       method: request.method,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');
@@ -120,7 +119,7 @@ export async function GET(request: NextRequest) {
       method: request.method,
     });
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       throw new AuthorizationError('Authentication required');
