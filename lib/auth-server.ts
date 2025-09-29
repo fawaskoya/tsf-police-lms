@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { Role } from './roles';
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'fallback-secret';
 
@@ -7,7 +8,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: Role;
   unit: string;
   rank: string;
   locale: string;
@@ -22,14 +23,14 @@ export async function getServerSession(): Promise<{ user: User } | null> {
       return null;
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as User;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
 
     return {
       user: {
         id: decoded.id,
         email: decoded.email,
         name: decoded.name,
-        role: decoded.role,
+        role: decoded.role as Role,
         unit: decoded.unit,
         rank: decoded.rank,
         locale: decoded.locale,
