@@ -77,6 +77,10 @@ export async function GET(
     });
 
     // Return file with appropriate headers
+    if (!downloadResult.buffer) {
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    }
+    
     return new NextResponse(downloadResult.buffer, {
       headers: {
         'Content-Type': fileRecord.contentType,
