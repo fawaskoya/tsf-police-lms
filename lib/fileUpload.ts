@@ -57,15 +57,15 @@ export function validateFile(
   // Check file type
   for (const [type, config] of Object.entries(SUPPORTED_FILE_TYPES)) {
     if (
-      config.extensions.includes(extension) &&
-      config.mimeTypes.includes(mimeType)
+      (config as any).extensions.includes(extension) &&
+      (config as any).mimeTypes.includes(mimeType)
     ) {
       // Check file size
-      if (size > config.maxSize) {
+      if (size > (config as any).maxSize) {
         return {
           isValid: false,
           fileType: type as SupportedFileType,
-          error: `File size exceeds maximum allowed size of ${formatFileSize(config.maxSize)}`,
+          error: `File size exceeds maximum allowed size of ${formatFileSize((config as any).maxSize)}`,
         };
       }
       
