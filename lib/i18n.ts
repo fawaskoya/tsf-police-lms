@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 // Can be imported from a shared config
 const locales = ['ar', 'en'];
-const defaultLocale = 'ar';
+const defaultLocale = 'en';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   // First try to get locale from request

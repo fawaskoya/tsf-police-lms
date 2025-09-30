@@ -68,7 +68,7 @@ export default async function middleware(request: NextRequest) {
       if (!token) {
         // Extract locale from pathname (e.g., /ar/admin -> ar)
         const localeMatch = pathname.match(/^\/([a-z]{2})/);
-        const locale = localeMatch ? localeMatch[1] : 'ar';
+        const locale = localeMatch ? localeMatch[1] : 'en';
         const loginUrl = new URL(`/${locale}/auth/login?callbackUrl=${encodeURIComponent(request.url)}`, request.url);
         console.log('🚫 No token - redirecting to login');
         return NextResponse.redirect(loginUrl);
@@ -80,7 +80,7 @@ export default async function middleware(request: NextRequest) {
       // Handle root route - redirect authenticated users to their dashboard
       if (pathname === '/' || pathname.match(/^\/[a-z]{2}$/)) {
         const localeMatch = pathname.match(/^\/([a-z]{2})/);
-        const locale = localeMatch ? localeMatch[1] : 'ar';
+        const locale = localeMatch ? localeMatch[1] : 'en';
         
         let dashboardPath = '/admin'; // default
         switch (userRole) {
@@ -110,7 +110,7 @@ export default async function middleware(request: NextRequest) {
       
       if (!hasAccess) {
         const localeMatch = pathname.match(/^\/([a-z]{2})/);
-        const locale = localeMatch ? localeMatch[1] : 'ar';
+        const locale = localeMatch ? localeMatch[1] : 'en';
         const unauthorizedUrl = new URL(`/${locale}/unauthorized`, request.url);
         console.log('⛔ Access denied - redirecting to unauthorized');
         return NextResponse.redirect(unauthorizedUrl);
