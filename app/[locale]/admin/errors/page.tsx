@@ -79,12 +79,14 @@ export default function ErrorsPage() {
 
   useEffect(() => {
     // Simulate loading error logs
-    setTimeout(() => {
+    const loadErrors = async () => {
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setErrors(mockErrors);
       setFilteredErrors(mockErrors);
       setLoading(false);
-    }, 1000);
-  }, [mockErrors]);
+    };
+    loadErrors();
+  }, []);
 
   useEffect(() => {
     let filtered = errors;

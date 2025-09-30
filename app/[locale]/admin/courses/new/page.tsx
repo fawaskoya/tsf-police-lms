@@ -428,6 +428,8 @@ function SettingsStep({
   formData: any;
   setFormData: (data: any) => void;
 }) {
+  const t = useTranslations();
+  
   return (
     <div className="space-y-6">
       <Card>
