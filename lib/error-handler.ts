@@ -29,6 +29,7 @@ export class AuthorizationError extends Error {
   statusCode = 403;
   code = 'AUTHORIZATION_ERROR';
   isOperational = true;
+  timestamp: string;
 
   constructor(message: string, context?: any) {
     super(message);
@@ -41,6 +42,7 @@ export class NotFoundError extends Error {
   statusCode = 404;
   code = 'NOT_FOUND_ERROR';
   isOperational = true;
+  timestamp: string;
 
   constructor(message: string, context?: any) {
     super(message);
@@ -53,6 +55,7 @@ export class DatabaseError extends Error {
   statusCode = 500;
   code = 'DATABASE_ERROR';
   isOperational = true;
+  timestamp: string;
 
   constructor(message: string, context?: any) {
     super(message);
