@@ -141,8 +141,8 @@ export default async function ArchivePage() {
         {archives.map((archive) => {
           const EntityIcon = getEntityIcon(archive.entityType);
           const entityName = session?.user?.locale === 'ar' 
-            ? archive.data.titleAr || archive.data.nameAr
-            : archive.data.titleEn || archive.data.nameEn;
+            ? (archive.data as any).titleAr || (archive.data as any).nameAr
+            : (archive.data as any).titleEn || (archive.data as any).nameEn;
 
           return (
             <Card key={archive.id} className="hover:shadow-md transition-shadow">
