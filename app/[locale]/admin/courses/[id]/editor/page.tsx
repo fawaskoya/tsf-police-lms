@@ -607,12 +607,10 @@ File Details:
 • Name: ${file.filename}
 • Size: ${formatFileSize(file.size)}
 • Type: ${file.fileType}
-• Status: ${file.status}
 • Downloads: ${file.downloadCount}
 • Uploaded by: ${file.uploader.firstName} ${file.uploader.lastName}
 • Upload date: ${formatDate(file.createdAt)}
 • Public: ${file.isPublic ? 'Yes' : 'No'}
-• Key: ${file.key}
                             `.trim();
                             console.log('View file details:', file);
                             alert(details);
@@ -627,7 +625,7 @@ File Details:
                           onClick={async () => {
                             try {
                               console.log('Downloading file:', file);
-                              const response = await fetch(`/api/files/${file.key}`, {
+                              const response = await fetch(`/api/files/${(file as any).key}`, {
                                 credentials: 'include',
                               });
                               
@@ -672,7 +670,7 @@ File Details:
                             if (confirm(`Are you sure you want to delete "${file.filename}"?`)) {
                               try {
                                 console.log('Deleting file:', file);
-                                const response = await fetch(`/api/files/${file.key}`, {
+                                const response = await fetch(`/api/files/${(file as any).key}`, {
                                   method: 'DELETE',
                                   credentials: 'include',
                                 });
