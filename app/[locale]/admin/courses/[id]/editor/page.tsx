@@ -601,21 +601,12 @@ export default function CourseEditorPage() {
                           variant="outline" 
                           size="sm"
                           onClick={() => {
-                            // View file details in a more detailed dialog
-                            const details = `
-File Details:
-• Name: ${file.filename}
-• Size: ${formatFileSize(file.size)}
-• Type: ${file.fileType}
-• Downloads: ${file.downloadCount}
-• Uploaded by: ${file.uploader.firstName} ${file.uploader.lastName}
-• Upload date: ${formatDate(file.createdAt)}
-• Public: ${file.isPublic ? 'Yes' : 'No'}
-                            `.trim();
-                            console.log('View file details:', file);
-                            alert(details);
+                            // Open file preview in new tab
+                            const previewUrl = `/api/files/${(file as any).key}/preview`;
+                            console.log('Opening file preview:', previewUrl);
+                            window.open(previewUrl, '_blank');
                           }}
-                          title="View Details"
+                          title="Preview File"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

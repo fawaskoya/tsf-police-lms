@@ -191,20 +191,10 @@ export default async function FilesPage() {
               <FileManager 
                 showUpload={canUploadFiles} 
                 onFileSelect={(file) => {
-                  // View file details
-                  const details = `
-File Details:
-• Name: ${file.filename}
-• Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB
-• Type: ${file.fileType}
-• Status: ${file.status}
-• Downloads: ${file.downloadCount}
-• Uploaded by: ${file.uploader.firstName} ${file.uploader.lastName}
-• Upload date: ${new Date(file.createdAt).toLocaleDateString()}
-• Public: ${file.isPublic ? 'Yes' : 'No'}
-• Key: ${file.key}
-                  `.trim();
-                  alert(details);
+                  // Open file preview in new tab
+                  const previewUrl = `/api/files/${file.key}/preview`;
+                  console.log('Opening file preview:', previewUrl);
+                  window.open(previewUrl, '_blank');
                 }}
               />
             </FileManagerErrorBoundary>

@@ -25,7 +25,7 @@ const intlMiddleware = createMiddleware({
 
   // If this locale is matched but there is no corresponding page,
   // send users to this default locale by default
-  defaultLocale: 'ar'
+  defaultLocale: 'en'
 });
 
 export default async function middleware(request: NextRequest) {

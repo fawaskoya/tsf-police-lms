@@ -13,6 +13,7 @@ export async function GET(
     console.log('File download request:', { key: params.key, url: request.url });
     
     const session = await getServerSession();
+    console.log('Session info:', session ? { userId: session.user?.id, role: session.user?.role, email: session.user?.email } : 'No session');
     const fileKey = params.key;
 
     console.log('Looking for file with key:', fileKey);
