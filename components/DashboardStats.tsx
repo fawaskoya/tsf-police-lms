@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { StatCard } from '@/components/StatCard';
 import { ProgressCard } from '@/components/ProgressCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,11 +14,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-interface DashboardStatsProps {
-  t: (key: string) => string;
-}
-
-export function DashboardStats({ t }: DashboardStatsProps) {
+export function DashboardStats() {
+  const t = useTranslations();
   const useMock = 
     process.env.NODE_ENV !== 'production' &&
     ((process.env.NEXT_PUBLIC_USE_MOCK ?? '').trim() === '1' ||

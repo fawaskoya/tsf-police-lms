@@ -16,7 +16,7 @@ const createSessionSchema = z.object({
   endsAt: z.string(),
   instructorId: z.string(),
   capacity: z.number().min(1),
-  mode: z.enum(['CLASSROOM', 'FIELD']),
+  mode: z.enum(['CLASSROOM', 'FIELD']).default('CLASSROOM'),
   attendancePolicy: z.object({
     allowLateCheckin: z.boolean().default(false),
     lateCheckinMinutes: z.number().default(15),
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       where: { id: validatedData.instructorId },
     });
 
-    if (!instructor || instructor.role !== 'INSTRUCTOR') {
+    if (!instructor || instructor.role !== 'instructor') {
       throw new ValidationError('Invalid instructor', { instructorId: validatedData.instructorId });
     }
 

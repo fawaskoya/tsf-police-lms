@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DashboardStats } from '@/components/DashboardStats';
+import { WelcomeHeader } from '@/components/WelcomeHeader';
 import { ProgressCard } from '@/components/ProgressCard';
 import { 
   BookOpen, 
@@ -22,26 +23,9 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {t('dashboard.welcome')}, {session?.user?.name}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('dashboard.overview')}
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            {t('dashboard.newCourse')}
-          </Button>
-          <Button variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            {t('dashboard.newSession')}
-          </Button>
-        </div>
-      </div>
+      <WelcomeHeader 
+        userName={session?.user?.name || ''}
+      />
 
       {/* Dashboard Statistics */}
       <Suspense fallback={<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -49,7 +33,7 @@ export default async function AdminDashboard() {
           <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
         ))}
       </div>}>
-        <DashboardStats t={t} />
+        <DashboardStats />
       </Suspense>
 
       {/* Charts and Progress */}

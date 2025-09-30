@@ -477,7 +477,12 @@ function SettingsStep({
               <span className="font-medium">Code:</span> {formData.code}
             </div>
             <div>
-              <span className="font-medium">Modality:</span> {formData.modality}
+              <span className="font-medium">Modality:</span> {
+                formData.modality === 'ELearning' && t('courses.elearning')
+                || formData.modality === 'Classroom' && t('courses.classroom')
+                || formData.modality === 'Blended' && t('courses.blended')
+                || formData.modality
+              }
             </div>
             <div>
               <span className="font-medium">Duration:</span> {formData.durationMins} minutes

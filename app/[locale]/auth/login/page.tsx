@@ -13,6 +13,7 @@ import { Loader2, Shield, GraduationCap, Users, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,19 +24,57 @@ export default function LoginPage() {
   const t = useTranslations();
 
   useEffect(() => {
+    console.log('🚀 Login page mounted');
     // Fetch CSRF token on mount
     fetch('/api/auth/csrf', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => setCsrfToken(data.csrfToken))
-      .catch(err => console.error('Failed to fetch CSRF token:', err));
+      .then(res => {
+        console.log('CSRF response status:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('CSRF token received:', !!data.csrfToken);
+        setCsrfToken(data.csrfToken);
+      })
+      .catch(err => console.error('❌ Failed to fetch CSRF token:', err));
   }, []);
+
+  useEffect(() => {
+    console.log('🔍 Checking existing session...');
+    // Check if already logged in
+    fetch('/api/auth/session', { credentials: 'include' })
+      .then(res => {
+        console.log('Session check status:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('Session data:', data);
+        if (data.user) {
+          console.log('✅ User already logged in, redirecting...');
+          const userRole = data.user.role;
+          const dashboardPath = getDashboardPath(userRole);
+          console.log('Redirect to:', `/${locale}${dashboardPath}`);
+          router.push(`/${locale}${dashboardPath}`);
+        } else {
+          console.log('No active session');
+          setIsCheckingAuth(false);
+        }
+      })
+      .catch(err => {
+        // User not logged in, stay on login page
+        console.log('❌ Session check error:', err);
+        setIsCheckingAuth(false);
+      });
+  }, [router, locale]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
+    console.log('📝 Login form submitted:', { email });
+
     try {
+      console.log('🌐 Sending login request...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -48,18 +87,23 @@ export default function LoginPage() {
         credentials: 'include',
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok || !data.success) {
+        console.log('❌ Login failed:', data.error);
         setError(data.error || t('auth.invalidCredentials'));
       } else {
         // Login successful - redirect based on role
+        console.log('✅ Login successful!');
         const userRole = data.user.role;
         const dashboardPath = getDashboardPath(userRole);
+        console.log('Redirecting to:', `/${locale}${dashboardPath}`);
         router.push(`/${locale}${dashboardPath}`);
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('💥 Login error:', error);
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
@@ -126,6 +170,15 @@ export default function LoginPage() {
     },
   ];
 
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50">
       {/* Hero Section */}
@@ -176,6 +229,15 @@ export default function LoginPage() {
               <CardDescription>
                 {t('auth.loginDescription')}
               </CardDescription>
+              <div className="mt-4 p-3 bg-muted rounded-md text-xs text-muted-foreground">
+                <p className="font-semibold mb-1">
+                  {locale === 'ar' ? '🔐 حسابات تجريبية:' : '🔐 Demo Accounts:'}
+                </p>
+                <p>admin@kbn.local / Passw0rd!</p>
+                <p>super@kbn.local / Passw0rd!</p>
+                <p>instructor@kbn.local / Passw0rd!</p>
+                <p>trainee@kbn.local / Passw0rd!</p>
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">

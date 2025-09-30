@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import { db } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'fallback-secret';
 
@@ -9,70 +11,39 @@ interface LoginRequest {
   password: string;
 }
 
-// Demo users for development
-const demoUsers = {
-  'super@kbn.local': {
-    id: '1',
-    email: 'super@kbn.local',
-    name: 'أحمد الكبير',
-    role: 'super_admin',
-    unit: 'Command',
-    rank: 'Colonel',
-    locale: 'ar',
-  },
-  'admin@kbn.local': {
-    id: '2',
-    email: 'admin@kbn.local',
-    name: 'محمد العبدالله',
-    role: 'admin',
-    unit: 'Training',
-    rank: 'Major',
-    locale: 'ar',
-  },
-  'instructor@kbn.local': {
-    id: '3',
-    email: 'instructor@kbn.local',
-    name: 'فاطمة السعد',
-    role: 'instructor',
-    unit: 'Academy',
-    rank: 'Captain',
-    locale: 'ar',
-  },
-  'commander@kbn.local': {
-    id: '4',
-    email: 'commander@kbn.local',
-    name: 'خالد المنصوري',
-    role: 'commander',
-    unit: 'Operations',
-    rank: 'Lieutenant Colonel',
-    locale: 'ar',
-  },
-  'trainee@kbn.local': {
-    id: '5',
-    email: 'trainee@kbn.local',
-    name: 'سارة الأحمد',
-    role: 'trainee',
-    unit: 'Patrol',
-    rank: 'Sergeant',
-    locale: 'ar',
-  },
-};
-
 export async function POST(request: NextRequest) {
   try {
-    const { email, password }: LoginRequest = await request.json();
+    console.log('📥 Login request received');
+    
+    const body = await request.json();
+    const { email, password }: LoginRequest = body;
 
-    console.log('🔐 Custom login attempt:', { email, hasPassword: !!password });
+    console.log('🔐 Login attempt:', { email, hasPassword: !!password, bodyKeys: Object.keys(body) });
 
     if (!email || !password) {
+      console.log('❌ Missing credentials');
       return NextResponse.json(
         { success: false, error: 'Email and password are required' },
         { status: 400 }
       );
     }
 
-    // Check demo users (for development)
-    const user = demoUsers[email as keyof typeof demoUsers];
+    // Fetch user from database
+    const user = await db.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        unit: true,
+        rank: true,
+        locale: true,
+        status: true,
+      },
+    });
 
     if (!user) {
       console.log('❌ User not found:', email);
@@ -82,7 +53,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password !== 'Passw0rd!') {
+    // Check if user is active
+    if (user.status !== 'ACTIVE') {
+      console.log('❌ User is not active:', email, 'Status:', user.status);
+      return NextResponse.json(
+        { success: false, error: 'Account is not active' },
+        { status: 403 }
+      );
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
       console.log('❌ Invalid password for:', email);
       return NextResponse.json(
         { success: false, error: 'Invalid credentials' },
@@ -92,12 +75,14 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Login successful for:', email, 'role:', user.role);
 
+    const userName = `${user.firstName} ${user.lastName}`;
+
     // Create JWT token
     const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: userName,
         role: user.role,
         unit: user.unit,
         rank: user.rank,
@@ -113,7 +98,7 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: userName,
         role: user.role,
         unit: user.unit,
         rank: user.rank,
@@ -132,12 +117,16 @@ export async function POST(request: NextRequest) {
 
     response.headers.set('Set-Cookie', cookie);
 
+    console.log('🍪 Cookie set:', cookie.split(';')[0]);
+    console.log('📤 Login response ready');
+
     return response;
 
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('💥 Login error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

@@ -16,8 +16,10 @@ const createUserSchema = z.object({
   lastName: z.string().min(1),
   email: z.string().email(),
   phone: z.string().optional(),
-  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'COMMANDER', 'TRAINEE']),
+  password: z.string().min(8),
+  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'INSTRUCTOR', 'COMMANDER', 'TRAINEE', 'super_admin', 'admin', 'instructor', 'commander', 'trainee']),
   locale: z.string().default('ar'),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED']).optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -152,15 +154,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate a temporary password
-    const tempPassword = Math.random().toString(36).slice(-12);
+    // Hash the provided password
     const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+
+    // Normalize role to lowercase with underscore
+    const normalizedRole = validatedData.role.toLowerCase() as any;
 
     const user = await db.user.create({
       data: {
         ...validatedData,
+        role: normalizedRole,
         password: hashedPassword,
+        status: validatedData.status || 'ACTIVE',
       },
       select: {
         id: true,
@@ -203,8 +209,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       user,
-      tempPassword, // In production, send via email instead
-      message: 'User created successfully. Temporary password provided for demo purposes.',
+      message: 'User created successfully.',
     });
   } catch (error) {
     const { error: errorResponse, status } = handleApiError(error, {

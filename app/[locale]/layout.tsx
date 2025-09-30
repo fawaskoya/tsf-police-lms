@@ -2,8 +2,12 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Inter, Noto_Kufi_Arabic, Tajawal } from 'next/font/google';
 import { Providers } from '@/components/Providers';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { setupGlobalErrorHandlers } from '@/lib/errorHandler';
 import '../../styles/globals.css';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Setup global error handlers on server-side
 if (typeof window === 'undefined') {
@@ -56,7 +60,9 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </Providers>
         </NextIntlClientProvider>
       </body>

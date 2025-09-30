@@ -106,6 +106,9 @@ model User {
   uploadedFiles       FileObject[]     @relation("FileUploader")
   sentNotifications   Notification[]   @relation("NotificationSender")
   receivedNotifications Notification[] @relation("NotificationRecipient")
+  moduleVersions      ModuleVersion[]
+  archives            Archive[]
+  individualEnrollments IndividualEnrollment[]
 
   @@map("users")
 }
@@ -132,6 +135,9 @@ model Course {
   exams        Exam[]
   sessions     Session[]
   certificates Certificate[]
+  tags         CourseTag[]
+  trainingProgramModules TrainingProgramModule[]
+  files        FileObject[]
 
   @@map("courses")
 }
@@ -144,13 +150,36 @@ model Module {
   uri          String      // File path or URL
   durationMins Int
   metadata     Json?       // Additional module-specific data
+  version      String      @default("1.0")
+  isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   // Relations
   course       Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  versions     ModuleVersion[]
+  tags         ModuleTag[]
+  files        FileObject[]
 
   @@map("modules")
+}
+
+model ModuleVersion {
+  id          String   @id @default(cuid())
+  moduleId    String
+  version     String
+  uri         String   // File path or URL
+  metadata    Json?    // Additional module-specific data
+  changeLog   String?  // Description of changes
+  createdById String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdById], references: [id])
+
+  @@unique([moduleId, version])
+  @@map("module_versions")
 }
 
 model Enrollment {
@@ -326,19 +355,49 @@ model ReportView {
   @@map("report_views")
 }
 
+enum FileType {
+  PDF
+  PPT
+  DOC
+  XLS
+  MP3
+  MP4
+  IMAGE
+  OTHER
+}
+
+enum FileStatus {
+  UPLOADING
+  UPLOADED
+  PROCESSING
+  PROCESSED
+  FAILED
+  DELETED
+}
+
 model FileObject {
-  id          String   @id @default(cuid())
-  bucket      String
-  key         String
-  size        Int
-  checksum    String
-  contentType String
+  id          String     @id @default(cuid())
+  filename    String     // Original filename
+  bucket      String     // Storage bucket (local, s3, minio, etc.)
+  key         String     // Storage key/path
+  size        Int        // File size in bytes
+  checksum    String     // SHA256 checksum for integrity
+  contentType String     // MIME type
+  fileType    FileType   // Categorized file type
+  status      FileStatus @default(UPLOADING)
+  metadata    Json?      // Additional file metadata (duration, dimensions, etc.)
   uploaderId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  courseId    String?    // Optional: associated course
+  moduleId    String?    // Optional: associated module
+  isPublic    Boolean    @default(false) // Public access flag
+  downloadCount Int      @default(0) // Download tracking
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   // Relations
-  uploader    User     @relation("FileUploader", fields: [uploaderId], references: [id])
+  uploader    User       @relation("FileUploader", fields: [uploaderId], references: [id])
+  course      Course?    @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  module      Module?    @relation(fields: [moduleId], references: [id], onDelete: SetNull)
 
   @@unique([bucket, key])
   @@map("file_objects")
@@ -408,4 +467,131 @@ model NotificationTemplate {
   updatedAt   DateTime          @updatedAt
 
   @@map("notification_templates")
+}
+
+// Content Tagging System
+model Tag {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  color       String?   // Hex color for UI display
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  courseTags  CourseTag[]
+  moduleTags  ModuleTag[]
+
+  @@map("tags")
+}
+
+model CourseTag {
+  id       String @id @default(cuid())
+  courseId String
+  tagId    String
+
+  // Relations
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, tagId])
+  @@map("course_tags")
+}
+
+model ModuleTag {
+  id       String @id @default(cuid())
+  moduleId String
+  tagId    String
+
+  // Relations
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, tagId])
+  @@map("module_tags")
+}
+
+// Content Archiving System
+model Archive {
+  id          String   @id @default(cuid())
+  entityType  String   // 'course', 'module', 'exam'
+  entityId    String   // ID of the archived entity
+  version     String   // Version of the archived content
+  data        Json     // Complete data of the archived entity
+  reason      String?  // Reason for archiving
+  archivedById String
+  archivedAt  DateTime @default(now())
+
+  // Relations
+  archiver    User     @relation(fields: [archivedById], references: [id])
+
+  @@unique([entityType, entityId, version])
+  @@map("archives")
+}
+
+// Custom Branding System
+model Branding {
+  id              String   @id @default(cuid())
+  organizationId  String   @unique // For multi-tenant support
+  logoUrl         String?  // URL to organization logo
+  primaryColor    String   @default("#6B0023") // TSF Police red
+  secondaryColor  String   @default("#FFFFFF") // White
+  accentColor     String   @default("#F8F9FA") // Light gray
+  fontFamily      String   @default("Inter")
+  customCss       String?  // Custom CSS overrides
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("branding")
+}
+
+// Individual Training Programs
+model TrainingProgram {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  enrollments   IndividualEnrollment[]
+  modules       TrainingProgramModule[]
+
+  @@map("training_programs")
+}
+
+model IndividualEnrollment {
+  id                String   @id @default(cuid())
+  userId            String
+  trainingProgramId String
+  status            EnrollmentStatus @default(ASSIGNED)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User           @relation(fields: [userId], references: [id])
+  trainingProgram   TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+
+  @@unique([userId, trainingProgramId])
+  @@map("individual_enrollments")
+}
+
+model TrainingProgramModule {
+  id                String   @id @default(cuid())
+  trainingProgramId String
+  courseId          String
+  order             Int
+  isRequired        Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  // Relations
+  trainingProgram   TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+  course            Course          @relation(fields: [courseId], references: [id])
+
+  @@unique([trainingProgramId, courseId])
+  @@map("training_program_modules")
 }

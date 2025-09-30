@@ -250,7 +250,11 @@ export default function CoursesPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Modality</label>
-                  <p className="text-sm text-muted-foreground">{selectedCourse.modality}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedCourse.modality === 'ELearning' && t('courses.elearning')}
+                    {selectedCourse.modality === 'Classroom' && t('courses.classroom')}
+                    {selectedCourse.modality === 'Blended' && t('courses.blended')}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Duration</label>

@@ -175,11 +175,11 @@ async function main() {
 
   // Create course modules
   const modulesData = [
-    { courseId: createdCourses[0].id, titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work', order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/police-intro.mp4', durationMins: 30 },
-    { courseId: createdCourses[0].id, titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties', order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/rights-duties.pdf', durationMins: 45 },
-    { courseId: createdCourses[0].id, titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws', order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/basic-laws.mp4', durationMins: 35 },
-    { courseId: createdCourses[1].id, titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts', order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/security-concepts.mp4', durationMins: 25 },
-    { courseId: createdCourses[1].id, titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management', order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/emergency-guide.pdf', durationMins: 40 },
+    { courseId: createdCourses[0].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/police-intro.mp4', durationMins: 30, metadata: { titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work' } },
+    { courseId: createdCourses[0].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/rights-duties.pdf', durationMins: 45, metadata: { titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties' } },
+    { courseId: createdCourses[0].id, order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/basic-laws.mp4', durationMins: 35, metadata: { titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws' } },
+    { courseId: createdCourses[1].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/security-concepts.mp4', durationMins: 25, metadata: { titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts' } },
+    { courseId: createdCourses[1].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/emergency-guide.pdf', durationMins: 40, metadata: { titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management' } },
   ];
 
   for (const moduleData of modulesData) {
@@ -317,6 +317,138 @@ async function main() {
 
   console.log('✅ Sample attempts and answers created');
 
+  // Create sample files
+  const sampleFiles = [
+    {
+      filename: 'Police_Training_Manual.pdf',
+      bucket: 'local',
+      key: 'files/police-training-manual.pdf',
+      size: 2048576, // 2MB
+      checksum: 'abc123def456',
+      contentType: 'application/pdf',
+      fileType: 'PDF',
+      status: 'PROCESSED',
+      metadata: { pages: 150, author: 'TSF Police Training Department' },
+      uploaderId: superAdmin.id,
+      courseId: createdCourses[0].id,
+      isPublic: false,
+      downloadCount: 45,
+    },
+    {
+      filename: 'Security_Procedures.pptx',
+      bucket: 'local',
+      key: 'files/security-procedures.pptx',
+      size: 15728640, // 15MB
+      checksum: 'def456ghi789',
+      contentType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      fileType: 'PPT',
+      status: 'PROCESSED',
+      metadata: { slides: 25, duration: '45 minutes' },
+      uploaderId: admin.id,
+      courseId: createdCourses[1].id,
+      isPublic: true,
+      downloadCount: 23,
+    },
+    {
+      filename: 'Traffic_Laws.docx',
+      bucket: 'local',
+      key: 'files/traffic-laws.docx',
+      size: 1048576, // 1MB
+      checksum: 'ghi789jkl012',
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      fileType: 'DOC',
+      status: 'PROCESSED',
+      metadata: { pages: 80, lastUpdated: '2024-01-15' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[0].id,
+      isPublic: false,
+      downloadCount: 67,
+    },
+    {
+      filename: 'Training_Schedule.xlsx',
+      bucket: 'local',
+      key: 'files/training-schedule.xlsx',
+      size: 524288, // 512KB
+      checksum: 'jkl012mno345',
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileType: 'XLS',
+      status: 'PROCESSED',
+      metadata: { sheets: 3, rows: 150 },
+      uploaderId: admin.id,
+      isPublic: true,
+      downloadCount: 34,
+    },
+    {
+      filename: 'Emergency_Procedures_Audio.mp3',
+      bucket: 'local',
+      key: 'files/emergency-procedures-audio.mp3',
+      size: 8388608, // 8MB
+      checksum: 'mno345pqr678',
+      contentType: 'audio/mpeg',
+      fileType: 'MP3',
+      status: 'PROCESSED',
+      metadata: { duration: '12:30', bitrate: '128kbps' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[1].id,
+      isPublic: false,
+      downloadCount: 89,
+    },
+    {
+      filename: 'Police_Equipment_Demo.mp4',
+      bucket: 'local',
+      key: 'files/police-equipment-demo.mp4',
+      size: 52428800, // 50MB
+      checksum: 'pqr678stu901',
+      contentType: 'video/mp4',
+      fileType: 'MP4',
+      status: 'PROCESSED',
+      metadata: { duration: '15:45', resolution: '1920x1080', fps: 30 },
+      uploaderId: commander.id,
+      courseId: createdCourses[2].id,
+      isPublic: true,
+      downloadCount: 156,
+    },
+    {
+      filename: 'Officer_Badge_Template.jpg',
+      bucket: 'local',
+      key: 'files/officer-badge-template.jpg',
+      size: 2097152, // 2MB
+      checksum: 'stu901vwx234',
+      contentType: 'image/jpeg',
+      fileType: 'IMAGE',
+      status: 'PROCESSED',
+      metadata: { width: 1024, height: 1024, format: 'JPEG' },
+      uploaderId: admin.id,
+      isPublic: false,
+      downloadCount: 12,
+    },
+    {
+      filename: 'Code_of_Conduct.pdf',
+      bucket: 'local',
+      key: 'files/code-of-conduct.pdf',
+      size: 3145728, // 3MB
+      checksum: 'vwx234yza567',
+      contentType: 'application/pdf',
+      fileType: 'PDF',
+      status: 'PROCESSED',
+      metadata: { pages: 200, version: '2.1' },
+      uploaderId: superAdmin.id,
+      courseId: createdCourses[0].id,
+      isPublic: true,
+      downloadCount: 234,
+    },
+  ];
+
+  const createdFiles = [];
+  for (const fileData of sampleFiles) {
+    const file = await prisma.fileObject.create({
+      data: fileData,
+    });
+    createdFiles.push(file);
+  }
+
+  console.log('✅ Sample files created');
+
   console.log('🎉 Database seeding completed successfully!');
   console.log('');
   console.log('📊 Summary:');
@@ -325,6 +457,7 @@ async function main() {
   console.log(`   • Exams: ${createdExams.length}`);
   console.log(`   • Questions: ${questions1.length}`);
   console.log(`   • Enrollments: ${10 * 2}`);
+  console.log(`   • Files: ${createdFiles.length}`);
   console.log('');
   console.log('🔐 Demo Credentials:');
   console.log('   Super Admin: super@kbn.local / Passw0rd!');

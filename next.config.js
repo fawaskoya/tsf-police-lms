@@ -37,5 +37,17 @@ const nextConfig = {
     ];
   },
 };
+const config = withNextIntl(nextConfig);
+const normalizedTrailingSlashFlag =
+  typeof config.env?._next_intl_trailing_slash === 'string'
+    ? config.env._next_intl_trailing_slash
+    : config.trailingSlash
+      ? 'true'
+      : 'false';
 
-module.exports = withNextIntl(nextConfig);
+config.env = {
+  ...config.env,
+  _next_intl_trailing_slash: normalizedTrailingSlashFlag,
+};
+
+module.exports = config;

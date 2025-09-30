@@ -152,7 +152,29 @@ export function handleApiError(error: unknown, context?: Record<string, any>) {
     );
   }
 
-  // Log the error
+  // Enhanced error logging
+  const errorDetails = {
+    name: appError.name,
+    message: appError.message,
+    code: appError.code,
+    statusCode: appError.statusCode,
+    stack: appError.stack,
+    context: { ...appError.context, ...context },
+    timestamp: appError.timestamp.toISOString(),
+    isOperational: appError.isOperational,
+  };
+
+  // Log to console with structured format
+  console.error(`[${errorDetails.timestamp}] API ERROR: ${errorDetails.name}`, {
+    message: errorDetails.message,
+    code: errorDetails.code,
+    statusCode: errorDetails.statusCode,
+    stack: errorDetails.stack?.split('\n').slice(0, 5).join('\n'), // First 5 lines
+    context: errorDetails.context,
+    isOperational: errorDetails.isOperational,
+  });
+
+  // Log the error using existing logger
   logError(appError, context);
 
   // Return appropriate response
@@ -160,6 +182,7 @@ export function handleApiError(error: unknown, context?: Record<string, any>) {
     error: {
       message: appError.isOperational ? appError.message : 'Internal server error',
       code: appError.code,
+      timestamp: errorDetails.timestamp,
       ...(process.env.NODE_ENV === 'development' && {
         stack: appError.stack,
         context: appError.context,

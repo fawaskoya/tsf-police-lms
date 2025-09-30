@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 // UserRole import removed - using normalized Role from lib/roles
 import { isSuperAdmin, prismaRoleToRole } from '@/lib/roles';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -19,7 +19,12 @@ import {
   GraduationCap,
   Target,
   Menu,
-  X
+  X,
+  Globe,
+  Check,
+  Tag,
+  Archive,
+  FolderOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LanguageSwitch } from './LanguageSwitch';
+// LanguageSwitch import removed - now integrated into profile menu
 import { NotificationDropdown } from './NotificationDropdown';
 import { cn, getInitials } from '@/lib/utils';
 import { getDirection } from '@/lib/rtl';
@@ -116,6 +121,30 @@ const navigationItems: NavigationItem[] = [
     icon: Target,
     roles: ['commander'],
   },
+  {
+    href: '/training-programs',
+    label: 'dashboard.trainingPrograms',
+    icon: GraduationCap,
+    roles: ['super_admin', 'admin', 'commander'],
+  },
+  {
+    href: '/tags',
+    label: 'dashboard.tags',
+    icon: Tag,
+    roles: ['super_admin', 'admin'],
+  },
+  {
+    href: '/archive',
+    label: 'dashboard.archives',
+    icon: Archive,
+    roles: ['super_admin', 'admin'],
+  },
+  {
+    href: '/files',
+    label: 'dashboard.fileManagement',
+    icon: FolderOpen,
+    roles: ['super_admin', 'admin', 'instructor'],
+  },
 ];
 
 export function Shell({ children }: ShellProps) {
@@ -126,6 +155,71 @@ export function Shell({ children }: ShellProps) {
   const isRTL = getDirection(locale) === 'rtl';
   const t = useTranslations();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const languages = [
+    { code: 'ar', name: 'العربية', flag: '🇶🇦' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+  ];
+
+  const getLocalizedPath = (newLocale: string) => {
+    // If pathname starts with current locale, replace it
+    if (pathname.startsWith(`/${locale}`)) {
+      return pathname.replace(`/${locale}`, `/${newLocale}`);
+    }
+    // If pathname doesn't start with locale, prepend the new locale
+    return `/${newLocale}${pathname}`;
+  };
+
+  const handleLanguageChange = async (newLocale: string) => {
+    // Prevent switching to the same locale
+    if (newLocale === locale) return;
+
+    // Save language preference to localStorage
+    localStorage.setItem('preferred-language', newLocale);
+
+    // Set cookie via API call for server-side persistence
+    try {
+      await fetch('/api/language', {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ locale: newLocale }),
+      });
+    } catch (error) {
+      console.warn('Failed to save language preference to server:', error);
+    }
+
+    // Navigate to the new locale
+    const newPath = getLocalizedPath(newLocale);
+    router.push(newPath);
+  };
+
+  // Translate user names based on locale
+  const translateUserName = (name: string) => {
+    const nameTranslations: Record<string, { ar: string; en: string }> = {
+      'أحمد الكبير': { ar: 'أحمد الكبير', en: 'Ahmed Al-Kabeer' },
+      'محمد العبدالله': { ar: 'محمد العبدالله', en: 'Mohammed Al-Abdullah' },
+      'فاطمة الزهراء': { ar: 'فاطمة الزهراء', en: 'Fatima Al-Zahra' },
+      'خالد الراشد': { ar: 'خالد الراشد', en: 'Khalid Al-Rashid' },
+      'عمر الحمد': { ar: 'عمر الحمد', en: 'Omar Al-Hamad' },
+      'سارة المحمود': { ar: 'سارة المحمود', en: 'Sara Al-Mahmoud' },
+      'محمد الخليفة': { ar: 'محمد الخليفة', en: 'Mohammed Al-Khalifa' },
+      'نور السليطي': { ar: 'نور السليطي', en: 'Noor Al-Sulaiti' },
+      'علي الثاني': { ar: 'علي الثاني', en: 'Ali Al-Thani' },
+      'أحمد المنصوري': { ar: 'أحمد المنصوري', en: 'Ahmed Al-Mansoori' },
+    };
+
+    const translation = nameTranslations[name];
+    if (translation) {
+      return translation[locale as 'ar' | 'en'];
+    }
+    
+    // Fallback: if no translation found, return original name
+    return name;
+  };
 
   useEffect(() => {
     // Fetch current session
@@ -252,7 +346,9 @@ export function Shell({ children }: ShellProps) {
               </div>
               <div>
                 <h1 className="font-bold text-lg">TSF Learning</h1>
-                <p className="text-xs text-muted-foreground">نظام التعلم</p>
+                <p className="text-xs text-muted-foreground">
+                  {locale === 'ar' ? 'نظام التعلم' : 'Learning Management System'}
+                </p>
               </div>
             </div>
             <Button
@@ -264,6 +360,79 @@ export function Shell({ children }: ShellProps) {
               <X className="h-5 w-5" />
             </Button>
           </div>
+
+          {/* User profile - moved to top */}
+          {session && (
+            <div className="p-4 border-b">
+              <div className="flex items-center space-x-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={session.user.image || undefined} />
+                        <AvatarFallback>
+                          {(() => {
+                            const translatedName = translateUserName(session.user.name);
+                            const nameParts = translatedName.split(' ');
+                            return getInitials(nameParts[0], nameParts[1] || '');
+                          })()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{translateUserName(session.user.name)}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {session.user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    
+                    {/* Language Switcher in Profile Menu */}
+                    <DropdownMenuLabel className="font-normal text-xs text-muted-foreground">
+                      <div className="flex items-center">
+                        <Globe className="h-3 w-3 mr-2" />
+                        Language
+                      </div>
+                    </DropdownMenuLabel>
+                    {languages.map((language) => (
+                      <DropdownMenuItem
+                        key={language.code}
+                        className="p-0"
+                      >
+                        <button
+                          onClick={() => handleLanguageChange(language.code)}
+                          className="flex items-center justify-between w-full text-left hover:bg-accent hover:text-accent-foreground px-2 py-1.5 rounded-sm"
+                        >
+                          <div className="flex items-center">
+                            <span className="mr-2">{language.flag}</span>
+                            <span className="text-xs">{language.name}</span>
+                          </div>
+                          {locale === language.code && (
+                            <Check className="h-3 w-3" />
+                          )}
+                        </button>
+                      </DropdownMenuItem>
+                    ))}
+                    
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      {t('navigation.logout')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{translateUserName(session.user.name)}</p>
+                  <Badge variant={getRoleBadgeVariant(normalizedRole)} className="text-xs">
+                    {t(getRoleTranslationKey(normalizedRole))}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
@@ -288,71 +457,28 @@ export function Shell({ children }: ShellProps) {
               );
             })}
           </nav>
-
-                {/* User info */}
-                <div className="p-4 border-t">
-                  <div className="flex items-center space-x-3">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={session.user.image || undefined} />
-                            <AvatarFallback>
-                              {getInitials(session.user.name.split(' ')[0], session.user.name.split(' ')[1] || '')}
-                            </AvatarFallback>
-                          </Avatar>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-56" align="end" forceMount>
-                        <DropdownMenuLabel className="font-normal">
-                          <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{session.user.name}</p>
-                            <p className="text-xs leading-none text-muted-foreground">
-                              {session.user.email}
-                            </p>
-                          </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout}>
-                          {t('navigation.logout')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{session.user.name}</p>
-                      <Badge variant={getRoleBadgeVariant(normalizedRole)} className="text-xs">
-                        {t(getRoleTranslationKey(normalizedRole))}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
         </div>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
-              {/* Top bar */}
-              <header className="bg-background/80 backdrop-blur-sm border-b px-4">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="lg:hidden"
-                    onClick={() => setSidebarOpen(true)}
-                  >
-                    <Menu className="h-5 w-5" />
-                  </Button>
+        {/* Mobile menu button - floating */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden fixed top-4 left-4 z-40 bg-background/80 backdrop-blur-sm border shadow-lg"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
 
-                  {/* Header actions */}
-                  <div className="flex items-center space-x-2">
-                    <NotificationDropdown />
-                    <LanguageSwitch />
-                  </div>
-                </div>
-              </header>
+        {/* Notification dropdown - floating */}
+        <div className="fixed top-4 right-4 z-40 lg:hidden">
+          <NotificationDropdown />
+        </div>
 
         {/* Page content */}
-        <main className="flex-1 px-6 pt-3 pb-6 overflow-auto">
+        <main className="flex-1 px-6 pt-3 pb-6 overflow-auto lg:pt-6">
           {children}
         </main>
       </div>

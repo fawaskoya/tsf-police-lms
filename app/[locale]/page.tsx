@@ -30,6 +30,9 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
     const userRole = session.user.role;
     const dashboardPath = getDashboardPath(userRole);
     redirect(`/${locale}${dashboardPath}`);
+  } else {
+    // Redirect unauthenticated users to login
+    redirect(`/${locale}/auth/login`);
   }
 
   // Public landing page for unauthenticated users

@@ -12,7 +12,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   // If no locale from request, check cookies for saved preference
   if (!locale || !locales.includes(locale)) {
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const savedLocale = cookieStore.get('preferred-language')?.value;
 
     if (savedLocale && locales.includes(savedLocale)) {
