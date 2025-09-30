@@ -160,7 +160,7 @@ export function handleApiError(error: unknown, context?: Record<string, any>) {
     statusCode: appError.statusCode,
     stack: appError.stack,
     context: { ...appError.context, ...context },
-    timestamp: appError.timestamp || new Date().toISOString(),
+    timestamp: (appError as any).timestamp || new Date().toISOString(),
     isOperational: appError.isOperational,
   };
 
