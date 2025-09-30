@@ -182,8 +182,8 @@ async function verifyJwtToken(token: string): Promise<TokenPayload | null> {
     const isValid = await crypto.subtle.verify(
       'HMAC',
       key,
-      signatureBytes,
-      signingInput
+      signatureBytes as any,
+      signingInput as any
     );
 
     if (!isValid) {
