@@ -175,7 +175,7 @@ export function FileManager({
         status: file.status
       });
       
-      const response = await fetch(`/api/files/${file.key}`, {
+      const response = await fetch(`/api/files/${encodeURIComponent(file.key)}`, {
         credentials: 'include',
       });
       

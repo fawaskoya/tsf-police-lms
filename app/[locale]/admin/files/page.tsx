@@ -193,7 +193,7 @@ export default async function FilesPage() {
                 onFileSelect={async (file) => {
                   try {
                     // Fetch file with authentication and open in new tab
-                    const previewUrl = `/api/files/${file.key}/preview`;
+                    const previewUrl = `/api/files/${encodeURIComponent(file.key)}/preview`;
                     console.log('Opening file preview:', previewUrl);
                     
                     const response = await fetch(previewUrl, {

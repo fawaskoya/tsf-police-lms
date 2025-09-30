@@ -604,7 +604,7 @@ export default function CourseEditorPage() {
                           onClick={async () => {
                             try {
                               // Fetch file with authentication and open in new tab
-                              const previewUrl = `/api/files/${(file as any).key}/preview`;
+                              const previewUrl = `/api/files/${encodeURIComponent((file as any).key)}/preview`;
                               console.log('Opening file preview:', previewUrl);
                               
                               const response = await fetch(previewUrl, {
@@ -636,7 +636,7 @@ export default function CourseEditorPage() {
                           onClick={async () => {
                             try {
                               console.log('Downloading file:', file);
-                              const response = await fetch(`/api/files/${(file as any).key}`, {
+                              const response = await fetch(`/api/files/${encodeURIComponent((file as any).key)}`, {
                                 credentials: 'include',
                               });
                               
@@ -681,7 +681,7 @@ export default function CourseEditorPage() {
                             if (confirm(`Are you sure you want to delete "${file.filename}"?`)) {
                               try {
                                 console.log('Deleting file:', file);
-                                const response = await fetch(`/api/files/${(file as any).key}`, {
+                                const response = await fetch(`/api/files/${encodeURIComponent((file as any).key)}`, {
                                   method: 'DELETE',
                                   credentials: 'include',
                                 });

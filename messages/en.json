@@ -147,6 +147,7 @@
     "modulesDescription": "Manage course modules and learning content",
     "filesDescription": "Upload and manage course files and resources",
     "courseSettings": "Course Settings",
+    "settings": "Settings",
     "settingsDescription": "Advanced course configuration and settings",
     "previewDescription": "Preview how the course will appear to learners",
     "dangerZone": "Danger Zone",
