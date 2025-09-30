@@ -32,52 +32,52 @@ export default function ErrorsPage() {
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
 
-  // Mock error data - in production, this would come from your error tracking service
-  const mockErrors: ErrorLog[] = [
-    {
-      id: '1',
-      timestamp: '2025-09-29T21:15:00Z',
-      level: 'ERROR',
-      message: 'Validation failed for session creation',
-      source: 'API',
-      endpoint: '/api/sessions',
-      method: 'POST',
-      userId: 'admin@kbn.local',
-      stack: 'ValidationError: Input validation failed\n    at validateInput...',
-    },
-    {
-      id: '2',
-      timestamp: '2025-09-29T21:14:30Z',
-      level: 'WARN',
-      message: 'Invalid instructor role validation',
-      source: 'API',
-      endpoint: '/api/sessions',
-      method: 'POST',
-      userId: 'admin@kbn.local',
-    },
-    {
-      id: '3',
-      timestamp: '2025-09-29T21:10:00Z',
-      level: 'ERROR',
-      message: 'Prisma relation error in certificates API',
-      source: 'API',
-      endpoint: '/api/certificates',
-      method: 'GET',
-      stack: 'PrismaClientKnownRequestError: Invalid prisma.certificate.findMany()...',
-    },
-    {
-      id: '4',
-      timestamp: '2025-09-29T21:05:00Z',
-      level: 'INFO',
-      message: 'User login successful',
-      source: 'API',
-      endpoint: '/api/auth/login',
-      method: 'POST',
-      userId: 'admin@kbn.local',
-    },
-  ];
-
   useEffect(() => {
+    // Mock error data - in production, this would come from your error tracking service
+    const mockErrors: ErrorLog[] = [
+      {
+        id: '1',
+        timestamp: '2025-09-29T21:15:00Z',
+        level: 'ERROR',
+        message: 'Validation failed for session creation',
+        source: 'API',
+        endpoint: '/api/sessions',
+        method: 'POST',
+        userId: 'admin@kbn.local',
+        stack: 'ValidationError: Input validation failed\n    at validateInput...',
+      },
+      {
+        id: '2',
+        timestamp: '2025-09-29T21:14:30Z',
+        level: 'WARN',
+        message: 'Invalid instructor role validation',
+        source: 'API',
+        endpoint: '/api/sessions',
+        method: 'POST',
+        userId: 'admin@kbn.local',
+      },
+      {
+        id: '3',
+        timestamp: '2025-09-29T21:10:00Z',
+        level: 'ERROR',
+        message: 'Prisma relation error in certificates API',
+        source: 'API',
+        endpoint: '/api/certificates',
+        method: 'GET',
+        stack: 'PrismaClientKnownRequestError: Invalid prisma.certificate.findMany()...',
+      },
+      {
+        id: '4',
+        timestamp: '2025-09-29T21:05:00Z',
+        level: 'INFO',
+        message: 'User login successful',
+        source: 'API',
+        endpoint: '/api/auth/login',
+        method: 'POST',
+        userId: 'admin@kbn.local',
+      },
+    ];
+
     // Simulate loading error logs
     const loadErrors = async () => {
       await new Promise(resolve => setTimeout(resolve, 1000));

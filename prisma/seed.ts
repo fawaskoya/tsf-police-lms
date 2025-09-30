@@ -173,13 +173,50 @@ async function main() {
 
   console.log('✅ Courses created');
 
-  // Create course modules
+  // Create comprehensive course modules
   const modulesData = [
+    // Police Fundamentals Course (POL-101) - 9 modules
     { courseId: createdCourses[0].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/police-intro.mp4', durationMins: 30, metadata: { titleAr: 'المقدمة في العمل الشرطي', titleEn: 'Introduction to Police Work' } },
     { courseId: createdCourses[0].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/rights-duties.pdf', durationMins: 45, metadata: { titleAr: 'الحقوق والواجبات', titleEn: 'Rights and Duties' } },
     { courseId: createdCourses[0].id, order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/basic-laws.mp4', durationMins: 35, metadata: { titleAr: 'القوانين الأساسية', titleEn: 'Basic Laws' } },
+    { courseId: createdCourses[0].id, order: 4, kind: 'PDF' as ModuleKind, uri: '/docs/criminal-code.pdf', durationMins: 40, metadata: { titleAr: 'قانون العقوبات', titleEn: 'Criminal Code' } },
+    { courseId: createdCourses[0].id, order: 5, kind: 'VIDEO' as ModuleKind, uri: '/videos/procedures.mp4', durationMins: 25, metadata: { titleAr: 'الإجراءات الشرطية', titleEn: 'Police Procedures' } },
+    { courseId: createdCourses[0].id, order: 6, kind: 'PDF' as ModuleKind, uri: '/docs/evidence-handling.pdf', durationMins: 35, metadata: { titleAr: 'التعامل مع الأدلة', titleEn: 'Evidence Handling' } },
+    { courseId: createdCourses[0].id, order: 7, kind: 'VIDEO' as ModuleKind, uri: '/videos/community-policing.mp4', durationMins: 20, metadata: { titleAr: 'الشرطة المجتمعية', titleEn: 'Community Policing' } },
+    { courseId: createdCourses[0].id, order: 8, kind: 'PDF' as ModuleKind, uri: '/docs/ethics.pdf', durationMins: 30, metadata: { titleAr: 'أخلاقيات المهنة', titleEn: 'Professional Ethics' } },
+    { courseId: createdCourses[0].id, order: 9, kind: 'QUIZ' as ModuleKind, uri: '/quizzes/police-fundamentals-quiz', durationMins: 20, metadata: { titleAr: 'اختبار أساسيات الشرطة', titleEn: 'Police Fundamentals Quiz' } },
+    
+    // Public Security Course (SEC-201) - 6 modules
     { courseId: createdCourses[1].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/security-concepts.mp4', durationMins: 25, metadata: { titleAr: 'مفاهيم الأمن العام', titleEn: 'Public Security Concepts' } },
     { courseId: createdCourses[1].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/emergency-guide.pdf', durationMins: 40, metadata: { titleAr: 'إدارة الطوارئ', titleEn: 'Emergency Management' } },
+    { courseId: createdCourses[1].id, order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/incident-response.mp4', durationMins: 30, metadata: { titleAr: 'الاستجابة للحوادث', titleEn: 'Incident Response' } },
+    { courseId: createdCourses[1].id, order: 4, kind: 'PDF' as ModuleKind, uri: '/docs/crisis-management.pdf', durationMins: 35, metadata: { titleAr: 'إدارة الأزمات', titleEn: 'Crisis Management' } },
+    { courseId: createdCourses[1].id, order: 5, kind: 'VIDEO' as ModuleKind, uri: '/videos/security-protocols.mp4', durationMins: 20, metadata: { titleAr: 'بروتوكولات الأمن', titleEn: 'Security Protocols' } },
+    { courseId: createdCourses[1].id, order: 6, kind: 'QUIZ' as ModuleKind, uri: '/quizzes/security-quiz', durationMins: 15, metadata: { titleAr: 'اختبار الأمن العام', titleEn: 'Public Security Quiz' } },
+    
+    // Traffic Management Course (TRA-301) - 8 modules
+    { courseId: createdCourses[2].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/traffic-laws.mp4', durationMins: 35, metadata: { titleAr: 'قوانين المرور', titleEn: 'Traffic Laws' } },
+    { courseId: createdCourses[2].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/traffic-regulations.pdf', durationMins: 45, metadata: { titleAr: 'أنظمة المرور', titleEn: 'Traffic Regulations' } },
+    { courseId: createdCourses[2].id, order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/accident-investigation.mp4', durationMins: 40, metadata: { titleAr: 'تحقيق الحوادث', titleEn: 'Accident Investigation' } },
+    { courseId: createdCourses[2].id, order: 4, kind: 'PDF' as ModuleKind, uri: '/docs/traffic-control.pdf', durationMins: 30, metadata: { titleAr: 'التحكم في المرور', titleEn: 'Traffic Control' } },
+    { courseId: createdCourses[2].id, order: 5, kind: 'VIDEO' as ModuleKind, uri: '/videos/vehicle-inspection.mp4', durationMins: 25, metadata: { titleAr: 'فحص المركبات', titleEn: 'Vehicle Inspection' } },
+    { courseId: createdCourses[2].id, order: 6, kind: 'PDF' as ModuleKind, uri: '/docs/penalty-system.pdf', durationMins: 35, metadata: { titleAr: 'نظام المخالفات', titleEn: 'Penalty System' } },
+    { courseId: createdCourses[2].id, order: 7, kind: 'VIDEO' as ModuleKind, uri: '/videos/traffic-safety.mp4', durationMins: 20, metadata: { titleAr: 'سلامة المرور', titleEn: 'Traffic Safety' } },
+    { courseId: createdCourses[2].id, order: 8, kind: 'QUIZ' as ModuleKind, uri: '/quizzes/traffic-quiz', durationMins: 25, metadata: { titleAr: 'اختبار إدارة المرور', titleEn: 'Traffic Management Quiz' } },
+    
+    // Criminal Investigation Course (CRI-401) - 12 modules
+    { courseId: createdCourses[3].id, order: 1, kind: 'VIDEO' as ModuleKind, uri: '/videos/investigation-basics.mp4', durationMins: 45, metadata: { titleAr: 'أساسيات التحقيق', titleEn: 'Investigation Basics' } },
+    { courseId: createdCourses[3].id, order: 2, kind: 'PDF' as ModuleKind, uri: '/docs/crime-scene.pdf', durationMins: 50, metadata: { titleAr: 'مسرح الجريمة', titleEn: 'Crime Scene' } },
+    { courseId: createdCourses[3].id, order: 3, kind: 'VIDEO' as ModuleKind, uri: '/videos/evidence-collection.mp4', durationMins: 40, metadata: { titleAr: 'جمع الأدلة', titleEn: 'Evidence Collection' } },
+    { courseId: createdCourses[3].id, order: 4, kind: 'PDF' as ModuleKind, uri: '/docs/forensics.pdf', durationMins: 60, metadata: { titleAr: 'الطب الشرعي', titleEn: 'Forensics' } },
+    { courseId: createdCourses[3].id, order: 5, kind: 'VIDEO' as ModuleKind, uri: '/videos/interviewing.mp4', durationMins: 35, metadata: { titleAr: 'أسلوب الاستجواب', titleEn: 'Interviewing Techniques' } },
+    { courseId: createdCourses[3].id, order: 6, kind: 'PDF' as ModuleKind, uri: '/docs/suspect-rights.pdf', durationMins: 30, metadata: { titleAr: 'حقوق المشتبه بهم', titleEn: 'Suspect Rights' } },
+    { courseId: createdCourses[3].id, order: 7, kind: 'VIDEO' as ModuleKind, uri: '/videos/case-management.mp4', durationMins: 25, metadata: { titleAr: 'إدارة القضايا', titleEn: 'Case Management' } },
+    { courseId: createdCourses[3].id, order: 8, kind: 'PDF' as ModuleKind, uri: '/docs/court-procedures.pdf', durationMins: 40, metadata: { titleAr: 'الإجراءات القضائية', titleEn: 'Court Procedures' } },
+    { courseId: createdCourses[3].id, order: 9, kind: 'VIDEO' as ModuleKind, uri: '/videos/cyber-crimes.mp4', durationMins: 30, metadata: { titleAr: 'الجرائم الإلكترونية', titleEn: 'Cyber Crimes' } },
+    { courseId: createdCourses[3].id, order: 10, kind: 'PDF' as ModuleKind, uri: '/docs/white-collar-crimes.pdf', durationMins: 35, metadata: { titleAr: 'الجرائم الاقتصادية', titleEn: 'White Collar Crimes' } },
+    { courseId: createdCourses[3].id, order: 11, kind: 'VIDEO' as ModuleKind, uri: '/videos/report-writing.mp4', durationMins: 20, metadata: { titleAr: 'كتابة التقارير', titleEn: 'Report Writing' } },
+    { courseId: createdCourses[3].id, order: 12, kind: 'QUIZ' as ModuleKind, uri: '/quizzes/investigation-quiz', durationMins: 30, metadata: { titleAr: 'اختبار التحقيق الجنائي', titleEn: 'Criminal Investigation Quiz' } },
   ];
 
   for (const moduleData of modulesData) {
@@ -226,7 +263,7 @@ async function main() {
 
   console.log('✅ Exams created');
 
-  // Create questions for first exam
+  // Create comprehensive questions for all exams
   const questions1 = [
     {
       questionAr: 'ما هو الدور الأساسي للشرطة في المجتمع؟',
@@ -261,8 +298,71 @@ async function main() {
       marks: 10,
       correctAnswer: 'false',
     },
+    {
+      questionAr: 'ما هي الإجراءات المطلوبة عند القبض على شخص؟',
+      questionEn: 'What procedures are required when arresting a person?',
+      type: QuestionType.MCQ,
+      marks: 12,
+      options: [
+        { optionAr: 'إبلاغه بأسباب القبض', optionEn: 'Inform him of arrest reasons' },
+        { optionAr: 'إعطاؤه وجبة مجانية', optionEn: 'Give him free meal' },
+        { optionAr: 'السماح له بالهروب', optionEn: 'Allow him to escape' },
+        { optionAr: 'عدم تسجيل القبض', optionEn: 'Not record the arrest' },
+      ],
+      correctAnswer: 'option1',
+    },
+    {
+      questionAr: 'ما هو الحد الأقصى للعقوبة في القانون القطري؟',
+      questionEn: 'What is the maximum penalty in Qatari law?',
+      type: QuestionType.MCQ,
+      marks: 8,
+      options: [
+        { optionAr: 'السجن المؤبد', optionEn: 'Life imprisonment' },
+        { optionAr: 'الغرامة المالية', optionEn: 'Financial fine' },
+        { optionAr: 'العمل المجتمعي', optionEn: 'Community service' },
+        { optionAr: 'الإعدام', optionEn: 'Death penalty' },
+      ],
+      correctAnswer: 'option4',
+    },
   ];
 
+  const questions2 = [
+    {
+      questionAr: 'ما هي أولوية الإجراءات في حالة الطوارئ؟',
+      questionEn: 'What is the priority of procedures in emergency situations?',
+      type: QuestionType.MCQ,
+      marks: 10,
+      options: [
+        { optionAr: 'إنقاذ الأرواح', optionEn: 'Save lives' },
+        { optionAr: 'جمع الأدلة', optionEn: 'Collect evidence' },
+        { optionAr: 'إغلاق المنطقة', optionEn: 'Seal the area' },
+        { optionAr: 'استدعاء الإعلام', optionEn: 'Call media' },
+      ],
+      correctAnswer: 'option1',
+    },
+    {
+      questionAr: 'هل يجب إخلاء المبنى فوراً عند سماع إنذار الحريق؟',
+      questionEn: 'Should the building be evacuated immediately when hearing fire alarm?',
+      type: QuestionType.TRUEFALSE,
+      marks: 8,
+      correctAnswer: 'true',
+    },
+    {
+      questionAr: 'ما هي أنواع الطوارئ التي يمكن أن تواجهها الشرطة؟',
+      questionEn: 'What types of emergencies can police face?',
+      type: QuestionType.MCQ,
+      marks: 12,
+      options: [
+        { optionAr: 'حرائق، فيضانات، حوادث', optionEn: 'Fires, floods, accidents' },
+        { optionAr: 'أحزاب سياسية فقط', optionEn: 'Political parties only' },
+        { optionAr: 'حفلات الزفاف', optionEn: 'Wedding parties' },
+        { optionAr: 'المباريات الرياضية فقط', optionEn: 'Sports matches only' },
+      ],
+      correctAnswer: 'option1',
+    },
+  ];
+
+  // Create questions for first exam (Police Fundamentals)
   for (let i = 0; i < questions1.length; i++) {
     const q = questions1[i];
     const question = await prisma.question.create({
@@ -278,27 +378,99 @@ async function main() {
     });
   }
 
+  // Create questions for second exam (Public Security)
+  for (let i = 0; i < questions2.length; i++) {
+    const q = questions2[i];
+    const question = await prisma.question.create({
+      data: {
+        examId: createdExams[1].id,
+        stemAr: q.questionAr,
+        stemEn: q.questionEn,
+        type: q.type,
+        marks: q.marks,
+        answer: q.correctAnswer,
+        options: q.options,
+      },
+    });
+  }
+
   console.log('✅ Questions created');
 
-  // Create enrollments
-  for (const trainee of trainees.slice(0, 10)) { // Enroll first 10 trainees
-    for (const course of createdCourses.slice(0, 2)) { // Enroll in first 2 courses
-      await prisma.enrollment.upsert({
-        where: {
-          userId_courseId: {
-            userId: trainee.id,
-            courseId: course.id,
-          },
-        },
-        update: {},
-        create: {
+  // Create comprehensive enrollments
+  // Enroll all trainees in Police Fundamentals (POL-101)
+  for (const trainee of trainees) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
           userId: trainee.id,
-          courseId: course.id,
-          assignedAt: new Date(),
-          status: 'ASSIGNED',
+          courseId: createdCourses[0].id, // POL-101
         },
-      });
-    }
+      },
+      update: {},
+      create: {
+        userId: trainee.id,
+        courseId: createdCourses[0].id,
+        assignedAt: new Date(),
+        status: 'ASSIGNED',
+      },
+    });
+  }
+
+  // Enroll Traffic unit trainees in Traffic Management (TRA-301)
+  for (const trainee of trainees.filter(t => t.unit === 'Traffic')) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: trainee.id,
+          courseId: createdCourses[2].id, // TRA-301
+        },
+      },
+      update: {},
+      create: {
+        userId: trainee.id,
+        courseId: createdCourses[2].id,
+        assignedAt: new Date(),
+        status: 'ASSIGNED',
+      },
+    });
+  }
+
+  // Enroll Criminal unit trainees in Criminal Investigation (CRI-401)
+  for (const trainee of trainees.filter(t => t.unit === 'Criminal')) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: trainee.id,
+          courseId: createdCourses[3].id, // CRI-401
+        },
+      },
+      update: {},
+      create: {
+        userId: trainee.id,
+        courseId: createdCourses[3].id,
+        assignedAt: new Date(),
+        status: 'ASSIGNED',
+      },
+    });
+  }
+
+  // Enroll some Patrol unit trainees in Public Security (SEC-201)
+  for (const trainee of trainees.filter(t => t.unit === 'Patrol').slice(0, 3)) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: trainee.id,
+          courseId: createdCourses[1].id, // SEC-201
+        },
+      },
+      update: {},
+      create: {
+        userId: trainee.id,
+        courseId: createdCourses[1].id,
+        assignedAt: new Date(),
+        status: 'ASSIGNED',
+      },
+    });
   }
 
   console.log('✅ Enrollments created');
@@ -317,8 +489,9 @@ async function main() {
 
   console.log('✅ Sample attempts and answers created');
 
-  // Create sample files
+  // Create comprehensive sample files
   const sampleFiles = [
+    // Police Fundamentals Course Files
     {
       filename: 'Police_Training_Manual.pdf',
       bucket: 'local',
@@ -335,59 +508,214 @@ async function main() {
       downloadCount: 45,
     },
     {
+      filename: 'Criminal_Code_Handbook.pdf',
+      bucket: 'local',
+      key: 'files/criminal-code-handbook.pdf',
+      size: 3145728, // 3MB
+      checksum: 'bcd234efg567',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 200, version: '2024.1', author: 'Qatar Legal Department' },
+      uploaderId: admin.id,
+      courseId: createdCourses[0].id,
+      isPublic: false,
+      downloadCount: 67,
+    },
+    {
+      filename: 'Evidence_Collection_Procedures.docx',
+      bucket: 'local',
+      key: 'files/evidence-collection-procedures.docx',
+      size: 1572864, // 1.5MB
+      checksum: 'cde345fgh678',
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      fileType: FileType.DOC,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 85, lastUpdated: '2024-02-15', department: 'Criminal Investigation' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[0].id,
+      isPublic: false,
+      downloadCount: 34,
+    },
+    {
+      filename: 'Officer_Code_of_Conduct.pdf',
+      bucket: 'local',
+      key: 'files/officer-code-of-conduct.pdf',
+      size: 1048576, // 1MB
+      checksum: 'def456ghi789',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 120, version: '3.2', effectiveDate: '2024-01-01' },
+      uploaderId: commander.id,
+      courseId: createdCourses[0].id,
+      isPublic: true,
+      downloadCount: 234,
+    },
+    // Public Security Course Files
+    {
       filename: 'Security_Procedures.pptx',
       bucket: 'local',
       key: 'files/security-procedures.pptx',
       size: 15728640, // 15MB
-      checksum: 'def456ghi789',
+      checksum: 'efg567hij890',
       contentType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       fileType: FileType.PPT,
       status: FileStatus.PROCESSED,
-      metadata: { slides: 25, duration: '45 minutes' },
+      metadata: { slides: 25, duration: '45 minutes', department: 'Security Operations' },
       uploaderId: admin.id,
       courseId: createdCourses[1].id,
       isPublic: true,
       downloadCount: 23,
     },
     {
-      filename: 'Traffic_Laws.docx',
+      filename: 'Emergency_Response_Protocol.pdf',
       bucket: 'local',
-      key: 'files/traffic-laws.docx',
+      key: 'files/emergency-response-protocol.pdf',
+      size: 4194304, // 4MB
+      checksum: 'fgh678ijk901',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 180, version: '2024.2', emergencyLevels: 5 },
+      uploaderId: commander.id,
+      courseId: createdCourses[1].id,
+      isPublic: false,
+      downloadCount: 89,
+    },
+    {
+      filename: 'Crisis_Management_Checklist.xlsx',
+      bucket: 'local',
+      key: 'files/crisis-management-checklist.xlsx',
       size: 1048576, // 1MB
       checksum: 'ghi789jkl012',
-      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      fileType: FileType.DOC,
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileType: FileType.XLS,
       status: FileStatus.PROCESSED,
-      metadata: { pages: 80, lastUpdated: '2024-01-15' },
+      metadata: { sheets: 4, scenarios: 12, lastUpdated: '2024-03-01' },
       uploaderId: instructor.id,
-      courseId: createdCourses[0].id,
+      courseId: createdCourses[1].id,
+      isPublic: false,
+      downloadCount: 45,
+    },
+    // Traffic Management Course Files
+    {
+      filename: 'Traffic_Laws_Manual.pdf',
+      bucket: 'local',
+      key: 'files/traffic-laws-manual.pdf',
+      size: 2097152, // 2MB
+      checksum: 'hij890klm123',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 150, version: '2024.1', lastUpdated: '2024-01-15' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[2].id,
       isPublic: false,
       downloadCount: 67,
     },
     {
-      filename: 'Training_Schedule.xlsx',
+      filename: 'Accident_Investigation_Guide.docx',
       bucket: 'local',
-      key: 'files/training-schedule.xlsx',
+      key: 'files/accident-investigation-guide.docx',
+      size: 1572864, // 1.5MB
+      checksum: 'ijk901lmn234',
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      fileType: FileType.DOC,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 95, procedures: 25, lastUpdated: '2024-02-20' },
+      uploaderId: admin.id,
+      courseId: createdCourses[2].id,
+      isPublic: false,
+      downloadCount: 34,
+    },
+    {
+      filename: 'Traffic_Violations_Database.xlsx',
+      bucket: 'local',
+      key: 'files/traffic-violations-database.xlsx',
       size: 524288, // 512KB
       checksum: 'jkl012mno345',
       contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       fileType: FileType.XLS,
       status: FileStatus.PROCESSED,
-      metadata: { sheets: 3, rows: 150 },
-      uploaderId: admin.id,
+      metadata: { sheets: 3, violations: 150, lastUpdated: '2024-03-10' },
+      uploaderId: commander.id,
+      courseId: createdCourses[2].id,
       isPublic: true,
-      downloadCount: 34,
+      downloadCount: 89,
     },
+    // Criminal Investigation Course Files
+    {
+      filename: 'Forensics_Handbook.pdf',
+      bucket: 'local',
+      key: 'files/forensics-handbook.pdf',
+      size: 6291456, // 6MB
+      checksum: 'klm123nop456',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 300, sections: 12, lastUpdated: '2024-01-30' },
+      uploaderId: superAdmin.id,
+      courseId: createdCourses[3].id,
+      isPublic: false,
+      downloadCount: 78,
+    },
+    {
+      filename: 'Crime_Scene_Photography_Guide.pdf',
+      bucket: 'local',
+      key: 'files/crime-scene-photography-guide.pdf',
+      size: 4194304, // 4MB
+      checksum: 'lmn234opq567',
+      contentType: 'application/pdf',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 180, techniques: 25, equipment: 'DSLR Cameras' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[3].id,
+      isPublic: false,
+      downloadCount: 45,
+    },
+    {
+      filename: 'Evidence_Chain_of_Custody.xlsx',
+      bucket: 'local',
+      key: 'files/evidence-chain-of-custody.xlsx',
+      size: 1048576, // 1MB
+      checksum: 'mno345pqr678',
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileType: FileType.XLS,
+      status: FileStatus.PROCESSED,
+      metadata: { sheets: 5, templates: 10, lastUpdated: '2024-02-15' },
+      uploaderId: admin.id,
+      courseId: createdCourses[3].id,
+      isPublic: true,
+      downloadCount: 67,
+    },
+    {
+      filename: 'Interviewing_Techniques_Manual.docx',
+      bucket: 'local',
+      key: 'files/interviewing-techniques-manual.docx',
+      size: 2097152, // 2MB
+      checksum: 'nop456qrs789',
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      fileType: FileType.DOC,
+      status: FileStatus.PROCESSED,
+      metadata: { pages: 120, techniques: 18, scenarios: 30 },
+      uploaderId: commander.id,
+      courseId: createdCourses[3].id,
+      isPublic: false,
+      downloadCount: 56,
+    },
+    // Multimedia Training Files
     {
       filename: 'Emergency_Procedures_Audio.mp3',
       bucket: 'local',
       key: 'files/emergency-procedures-audio.mp3',
       size: 8388608, // 8MB
-      checksum: 'mno345pqr678',
+      checksum: 'opq567rst890',
       contentType: 'audio/mpeg',
       fileType: FileType.MP3,
       status: FileStatus.PROCESSED,
-      metadata: { duration: '12:30', bitrate: '128kbps' },
+      metadata: { duration: '12:30', bitrate: '128kbps', language: 'Arabic' },
       uploaderId: instructor.id,
       courseId: createdCourses[1].id,
       isPublic: false,
@@ -402,62 +730,115 @@ async function main() {
       contentType: 'video/mp4',
       fileType: FileType.MP4,
       status: FileStatus.PROCESSED,
-      metadata: { duration: '15:45', resolution: '1920x1080', fps: 30 },
+      metadata: { duration: '15:45', resolution: '1920x1080', fps: 30, language: 'Arabic/English' },
       uploaderId: commander.id,
-      courseId: createdCourses[2].id,
+      courseId: createdCourses[0].id,
       isPublic: true,
       downloadCount: 156,
     },
+    {
+      filename: 'Traffic_Control_Simulation.mp4',
+      bucket: 'local',
+      key: 'files/traffic-control-simulation.mp4',
+      size: 31457280, // 30MB
+      checksum: 'qrs789tuv012',
+      contentType: 'video/mp4',
+      fileType: FileType.MP4,
+      status: FileStatus.PROCESSED,
+      metadata: { duration: '22:15', resolution: '1280x720', fps: 25, simulation: true },
+      uploaderId: admin.id,
+      courseId: createdCourses[2].id,
+      isPublic: false,
+      downloadCount: 78,
+    },
+    {
+      filename: 'Crime_Scene_Analysis_Demo.mp4',
+      bucket: 'local',
+      key: 'files/crime-scene-analysis-demo.mp4',
+      size: 41943040, // 40MB
+      checksum: 'rst890uvw123',
+      contentType: 'video/mp4',
+      fileType: FileType.MP4,
+      status: FileStatus.PROCESSED,
+      metadata: { duration: '28:30', resolution: '1920x1080', fps: 30, caseStudy: 'Real Case' },
+      uploaderId: instructor.id,
+      courseId: createdCourses[3].id,
+      isPublic: false,
+      downloadCount: 123,
+    },
+    {
+      filename: 'Training_Schedule_Overview.xlsx',
+      bucket: 'local',
+      key: 'files/training-schedule-overview.xlsx',
+      size: 1048576, // 1MB
+      checksum: 'stu901vwx234',
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileType: FileType.XLS,
+      status: FileStatus.PROCESSED,
+      metadata: { sheets: 6, courses: 4, trainees: 50, lastUpdated: '2024-03-15' },
+      uploaderId: admin.id,
+      isPublic: true,
+      downloadCount: 45,
+    },
+    // Additional Training Resources
     {
       filename: 'Officer_Badge_Template.jpg',
       bucket: 'local',
       key: 'files/officer-badge-template.jpg',
       size: 2097152, // 2MB
-      checksum: 'stu901vwx234',
+      checksum: 'tuv012wxy345',
       contentType: 'image/jpeg',
       fileType: FileType.IMAGE,
       status: FileStatus.PROCESSED,
-      metadata: { width: 1024, height: 1024, format: 'JPEG' },
+      metadata: { width: 1024, height: 1024, format: 'JPEG', department: 'HR' },
       uploaderId: admin.id,
       isPublic: false,
       downloadCount: 12,
     },
     {
-      filename: 'Code_of_Conduct.pdf',
+      filename: 'Training_Certificate_Template.pdf',
       bucket: 'local',
-      key: 'files/code-of-conduct.pdf',
-      size: 3145728, // 3MB
-      checksum: 'vwx234yza567',
+      key: 'files/training-certificate-template.pdf',
+      size: 1048576, // 1MB
+      checksum: 'uvw123xyz456',
       contentType: 'application/pdf',
       fileType: FileType.PDF,
       status: FileStatus.PROCESSED,
-      metadata: { pages: 200, version: '2.1' },
+      metadata: { pages: 1, template: true, lastUpdated: '2024-01-01' },
       uploaderId: superAdmin.id,
-      courseId: createdCourses[0].id,
       isPublic: true,
-      downloadCount: 234,
+      downloadCount: 89,
     },
   ];
 
   const createdFiles = [];
   for (const fileData of sampleFiles) {
-    const file = await prisma.fileObject.create({
-      data: fileData,
+    const file = await prisma.fileObject.upsert({
+      where: {
+        bucket_key: {
+          bucket: fileData.bucket,
+          key: fileData.key,
+        },
+      },
+      update: {},
+      create: fileData,
     });
     createdFiles.push(file);
   }
 
   console.log('✅ Sample files created');
 
-  console.log('🎉 Database seeding completed successfully!');
+  console.log('🎉 Enhanced database seeding completed successfully!');
   console.log('');
   console.log('📊 Summary:');
-  console.log(`   • Users: ${5 + trainees.length}`);
-  console.log(`   • Courses: ${createdCourses.length}`);
-  console.log(`   • Exams: ${createdExams.length}`);
-  console.log(`   • Questions: ${questions1.length}`);
-  console.log(`   • Enrollments: ${10 * 2}`);
-  console.log(`   • Files: ${createdFiles.length}`);
+  console.log(`   • Users: ${5 + trainees.length} (Super Admin, Admin, Instructor, Commander, ${trainees.length} Trainees)`);
+  console.log(`   • Courses: ${createdCourses.length} (POL-101, SEC-201, TRA-301, CRI-401)`);
+  console.log(`   • Modules: ${modulesData.length} (${createdCourses[0].titleEn}: 9 modules, ${createdCourses[1].titleEn}: 6 modules, ${createdCourses[2].titleEn}: 8 modules, ${createdCourses[3].titleEn}: 12 modules)`);
+  console.log(`   • Exams: ${createdExams.length} (with comprehensive questions)`);
+  console.log(`   • Questions: ${questions1.length + questions2.length} (MCQ and True/False)`);
+  console.log(`   • Enrollments: ${trainees.length + 3 + 3 + 3} (All trainees in Police Fundamentals, Traffic unit in Traffic Management, Criminal unit in Criminal Investigation, 3 Patrol in Public Security)`);
+  console.log(`   • Files: ${createdFiles.length} (PDFs, DOCX, XLSX, PPTX, MP3, MP4, JPG)`);
+  console.log(`   • File Types: PDF (${createdFiles.filter(f => f.fileType === FileType.PDF).length}), DOC (${createdFiles.filter(f => f.fileType === FileType.DOC).length}), XLS (${createdFiles.filter(f => f.fileType === FileType.XLS).length}), PPT (${createdFiles.filter(f => f.fileType === FileType.PPT).length}), MP3 (${createdFiles.filter(f => f.fileType === FileType.MP3).length}), MP4 (${createdFiles.filter(f => f.fileType === FileType.MP4).length}), IMAGE (${createdFiles.filter(f => f.fileType === FileType.IMAGE).length})`);
   console.log('');
   console.log('🔐 Demo Credentials:');
   console.log('   Super Admin: super@kbn.local / Passw0rd!');
@@ -465,6 +846,21 @@ async function main() {
   console.log('   Instructor: instructor@kbn.local / Passw0rd!');
   console.log('   Commander: commander@kbn.local / Passw0rd!');
   console.log('   Trainee: trainee@kbn.local / Passw0rd!');
+  console.log('');
+  console.log('📚 Course Content:');
+  console.log(`   • Police Fundamentals (POL-101): 9 modules, 5 questions, 4 files`);
+  console.log(`   • Public Security (SEC-201): 6 modules, 3 questions, 3 files`);
+  console.log(`   • Traffic Management (TRA-301): 8 modules, 0 questions, 3 files`);
+  console.log(`   • Criminal Investigation (CRI-401): 12 modules, 0 questions, 4 files`);
+  console.log('');
+  console.log('📁 File Types Available:');
+  console.log('   • PDFs: Training manuals, handbooks, procedures, protocols');
+  console.log('   • DOCX: Procedures, guides, manuals, techniques');
+  console.log('   • XLSX: Databases, schedules, checklists, templates');
+  console.log('   • PPTX: Presentations, training materials');
+  console.log('   • MP3: Audio training content');
+  console.log('   • MP4: Video demonstrations, simulations, case studies');
+  console.log('   • JPG: Templates, images, visual aids');
 }
 
 main()

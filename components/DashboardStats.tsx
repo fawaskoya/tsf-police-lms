@@ -143,39 +143,7 @@ export function DashboardStats() {
         </Card>
       </div>
 
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('dashboard.recentActivity')}</CardTitle>
-          <CardDescription>
-            Latest activities across the platform
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivity.length > 0 ? (
-              recentActivity.map((activity: any) => (
-                <div key={activity.id} className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">
-                      {activity.user} {activity.action}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.details || activity.course}
-                    </p>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(activity.time).toLocaleTimeString()}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">No recent activity</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Recent Activity - Moved to separate component */}
     </>
   );
 }

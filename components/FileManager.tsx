@@ -164,15 +164,33 @@ export function FileManager({
 
   const downloadFile = async (file: any) => {
     try {
-      console.log('Starting download for file:', file.filename);
-      const response = await fetch(`/api/files/${file.key}`);
+      console.log('Starting download for file:', {
+        filename: file.filename,
+        key: file.key,
+        id: file.id,
+        size: file.size,
+        status: file.status
+      });
+      
+      const response = await fetch(`/api/files/${file.key}`, {
+        credentials: 'include',
+      });
+      
+      console.log('Download response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Download failed: HTTP ${response.status}`);
+        console.error('Download error response:', errorData);
+        throw new Error(errorData.error || `Download failed: HTTP ${response.status} ${response.statusText}`);
       }
       
       const blob = await response.blob();
+      console.log('Download blob received:', { size: blob.size, type: blob.type });
+      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

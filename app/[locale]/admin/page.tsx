@@ -5,7 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { DashboardStats } from '@/components/DashboardStats';
 import { WelcomeHeader } from '@/components/WelcomeHeader';
-import { ProgressCard } from '@/components/ProgressCard';
+import { UnitPerformance } from '@/components/UnitPerformance';
+import { CertificateExpiries } from '@/components/CertificateExpiries';
+import { CompletionTrend } from '@/components/CompletionTrend';
+import { SystemOverview } from '@/components/SystemOverview';
+import { RecentActivity } from '@/components/RecentActivity';
 import { 
   BookOpen, 
   Calendar, 
@@ -39,59 +43,42 @@ export default async function AdminDashboard() {
       {/* Charts and Progress */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Completion Trend Chart */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Completion Trend</CardTitle>
-            <CardDescription>
-              Course completion rates over the last 12 months
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              Chart placeholder - Completion trend
-            </div>
-          </CardContent>
-        </Card>
+        <Suspense fallback={
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Completion Trend</CardTitle>
+              <CardDescription>Course completion rates over the last 12 months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading completion trend...
+              </div>
+            </CardContent>
+          </Card>
+        }>
+          <CompletionTrend />
+        </Suspense>
 
         {/* Unit Performance */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Unit Performance</CardTitle>
-            <CardDescription>
-              Pass rates by unit
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ProgressCard
-              title="Stadium Ops"
-              value={94}
-              description="24 trainees"
-              color="success"
-            />
-            <ProgressCard
-              title="Cyber Security"
-              value={89}
-              description="18 trainees"
-              color="success"
-            />
-            <ProgressCard
-              title="Traffic Control"
-              value={76}
-              description="31 trainees"
-              color="warning"
-            />
-            <ProgressCard
-              title="K9 Unit"
-              value={82}
-              description="12 trainees"
-              color="success"
-            />
-          </CardContent>
-        </Card>
+        <Suspense fallback={
+          <Card>
+            <CardHeader>
+              <CardTitle>Unit Performance</CardTitle>
+              <CardDescription>Pass rates by unit</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading unit performance...
+              </div>
+            </CardContent>
+          </Card>
+        }>
+          <UnitPerformance />
+        </Suspense>
       </div>
 
-      {/* Quick Actions and Recent Activity */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Quick Actions, System Overview, and Recent Activity */}
+      <div className="grid gap-6 md:grid-cols-3">
         {/* Quick Actions */}
         <Card>
           <CardHeader>
@@ -120,58 +107,57 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Additional Dashboard Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle>System Overview</CardTitle>
-            <CardDescription>
-              Platform status and performance metrics
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Database Status</span>
-                <span className="text-sm text-green-600">Connected</span>
+        {/* System Overview */}
+        <Suspense fallback={
+          <Card>
+            <CardHeader>
+              <CardTitle>System Overview</CardTitle>
+              <CardDescription>Platform status and performance metrics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                Loading system overview...
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">API Health</span>
-                <span className="text-sm text-green-600">Operational</span>
+            </CardContent>
+          </Card>
+        }>
+          <SystemOverview />
+        </Suspense>
+
+        {/* Recent Activity */}
+        <Suspense fallback={
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('dashboard.recentActivity')}</CardTitle>
+              <CardDescription>Latest activities across the platform</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                Loading recent activity...
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Last Backup</span>
-                <span className="text-sm text-muted-foreground">2 hours ago</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        }>
+          <RecentActivity />
+        </Suspense>
       </div>
 
       {/* Certificate Expiries */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Certificate Expiries</CardTitle>
-          <CardDescription>
-            Certificates expiring in the next 30, 60, and 90 days
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <div className="text-2xl font-bold text-yellow-700">12</div>
-              <div className="text-sm text-yellow-600">Next 30 days</div>
+      <Suspense fallback={
+        <Card>
+          <CardHeader>
+            <CardTitle>Certificate Expiries</CardTitle>
+            <CardDescription>Certificates expiring in the next 30, 60, and 90 days</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+              Loading certificate expiry data...
             </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
-              <div className="text-2xl font-bold text-orange-700">8</div>
-              <div className="text-sm text-orange-600">Next 60 days</div>
-            </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
-              <div className="text-2xl font-bold text-red-700">3</div>
-              <div className="text-sm text-red-600">Next 90 days</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      }>
+        <CertificateExpiries />
+      </Suspense>
     </div>
   );
 }

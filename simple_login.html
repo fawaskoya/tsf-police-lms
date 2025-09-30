@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSF Police LMS - Simple Login Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: #007bff; outline: none; }
+        button { 
+            width: 100%;
+            background: #007bff; 
+            color: white; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-radius: 6px; 
+            font-weight: bold;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .demo-accounts {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .demo-accounts h3 { margin-top: 0; }
+        .demo-accounts p { margin: 5px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚔 TSF Police LMS</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            Learning Management System - Login Test
+        </p>
+        
+        <div class="demo-accounts">
+            <h3>🔐 Demo Accounts (Click to fill)</h3>
+            <p onclick="fillCredentials('admin@kbn.local', 'Passw0rd!')" style="cursor: pointer;">👑 Admin: admin@kbn.local / Passw0rd!</p>
+            <p onclick="fillCredentials('super@kbn.local', 'Passw0rd!')" style="cursor: pointer;">⭐ Super Admin: super@kbn.local / Passw0rd!</p>
+            <p onclick="fillCredentials('instructor@kbn.local', 'Passw0rd!')" style="cursor: pointer;">👨‍🏫 Instructor: instructor@kbn.local / Passw0rd!</p>
+            <p onclick="fillCredentials('trainee@kbn.local', 'Passw0rd!')" style="cursor: pointer;">🎓 Trainee: trainee@kbn.local / Passw0rd!</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">📧 Email:</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">🔒 Password:</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" id="loginBtn">🚀 Login</button>
+        </form>
+        
+        <div id="result"></div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <button onclick="testSession()" style="width: auto; background: #28a745; margin-right: 10px;">🔍 Check Session</button>
+            <button onclick="clearResult()" style="width: auto; background: #6c757d;">🧹 Clear</button>
+        </div>
+    </div>
+    
+    <script>
+        function fillCredentials(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+        }
+        
+        function clearResult() {
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').className = '';
+        }
+        
+        async function testSession() {
+            const resultDiv = document.getElementById('result');
+            try {
+                const response = await fetch('/api/auth/session', { credentials: 'include' });
+                const data = await response.json();
+                console.log('Session test:', data);
+                
+                if (data.user) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Active Session Found!</strong><br>
+                        👤 User: ${data.user.name}<br>
+                        🎭 Role: ${data.user.role}<br>
+                        📧 Email: ${data.user.email}<br>
+                        🏢 Unit: ${data.user.unit}<br>
+                        ⭐ Rank: ${data.user.rank}<br>
+                        🌍 Locale: ${data.user.locale}
+                    `;
+                } else {
+                    resultDiv.className = 'result info';
+                    resultDiv.innerHTML = '<strong>ℹ️ No Active Session</strong><br>User is not logged in.';
+                }
+            } catch (error) {
+                console.error('Session test error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Session Test Failed:</strong> ${error.message}`;
+            }
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = '⏳ Logging in...';
+            clearResult();
+            
+            try {
+                console.log('🚀 Testing login with:', email);
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                console.log('📥 Response:', data);
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>🎉 Login Successful!</strong><br><br>
+                        👤 <strong>User:</strong> ${data.user.name}<br>
+                        🎭 <strong>Role:</strong> ${data.user.role}<br>
+                        📧 <strong>Email:</strong> ${data.user.email}<br>
+                        🏢 <strong>Unit:</strong> ${data.user.unit}<br>
+                        ⭐ <strong>Rank:</strong> ${data.user.rank}<br>
+                        🌍 <strong>Locale:</strong> ${data.user.locale}<br><br>
+                        <strong>✅ Authentication working perfectly!</strong>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Login Failed:</strong><br>${data.error || 'Unknown error'}`;
+                }
+            } catch (error) {
+                console.error('💥 Error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong><br>${error.message}`;
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🚀 Login';
+            }
+        });
+        
+        // Test session on page load
+        window.addEventListener('load', () => {
+            console.log('🌐 Page loaded, testing session...');
+            testSession();
+        });
+    </script>
+</body>
+</html>

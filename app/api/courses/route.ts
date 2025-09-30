@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
           select: {
             enrollments: true,
             modules: true,
+            files: true,
           },
         },
         creator: {

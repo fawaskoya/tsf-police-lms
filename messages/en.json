@@ -28,7 +28,8 @@
     "all": "All",
     "none": "None",
     "required": "Required",
-    "optional": "Optional"
+    "optional": "Optional",
+    "actions": "Actions"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -124,6 +125,7 @@
     "createdAt": "Created At",
     "modules": "Modules",
     "enrollments": "Enrollments",
+    "files": "Files",
     "draft": "Draft",
     "published": "Published",
     "archived": "Archived",
@@ -136,7 +138,46 @@
     "h5p": "H5P",
     "scorm": "SCORM",
     "pdf": "PDF",
-    "quiz": "Quiz"
+    "quiz": "Quiz",
+    "searchPlaceholder": "Search courses...",
+    "viewDetails": "View Details",
+    "preview": "Preview",
+    "basicInfo": "Basic Information",
+    "basicInfoDescription": "Update the basic course information below",
+    "modulesDescription": "Manage course modules and learning content",
+    "filesDescription": "Upload and manage course files and resources",
+    "courseSettings": "Course Settings",
+    "settingsDescription": "Advanced course configuration and settings",
+    "previewDescription": "Preview how the course will appear to learners",
+    "dangerZone": "Danger Zone",
+    "updateSuccess": "Course updated successfully",
+    "saving": "Saving...",
+    "noModules": "No modules found",
+    "noFiles": "No files found",
+    "editModule": "Edit Module",
+    "editModuleDescription": "Update the module information",
+    "addModuleDescription": "Add a new module to this course",
+    "moduleUri": "Module URI/Link",
+    "descriptionAr": "Description (Arabic)",
+    "descriptionEn": "Description (English)",
+    "contentType": "Content Type",
+    "urlLink": "URL/Link",
+    "uploadFile": "Upload File",
+    "uploadModuleFile": "Upload Module File",
+    "clickToUpload": "Click to upload file",
+    "supportedFormats": "Supported formats",
+    "uploadedFile": "Uploaded file",
+    "fileReady": "File ready"
+  },
+  "files": {
+    "dragDropFiles": "Drag & drop files here, or click to select",
+    "supportedFormats": "PDF, DOC, XLS, PPT, MP3, MP4, Images",
+    "selectFiles": "Select Files",
+    "maxFileSize": "Max file size",
+    "maxFiles": "Max files",
+    "uploadProgress": "Upload Progress",
+    "clearCompleted": "Clear Completed",
+    "uploading": "Uploading"
   },
   "exams": {
     "title": "Exams",
@@ -249,6 +290,11 @@
     "positive": "Must be a positive number",
     "futureDate": "Must be a future date",
     "pastDate": "Must be a past date"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "viewAll": "View All"
   },
   "errors": {
     "generic": "An unexpected error occurred",

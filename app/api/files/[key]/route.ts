@@ -8,9 +8,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { key: string } }
 ) {
+  console.log('🚀 FILE DOWNLOAD API CALLED:', { key: params.key, url: request.url });
   try {
+    console.log('File download request:', { key: params.key, url: request.url });
+    
     const session = await getServerSession();
     const fileKey = params.key;
+
+    console.log('Looking for file with key:', fileKey);
 
     // Find file record
     const fileRecord = await db.fileObject.findFirst({
@@ -26,7 +31,17 @@ export async function GET(
       },
     });
 
+    console.log('File record found:', fileRecord ? {
+      id: fileRecord.id,
+      filename: fileRecord.filename,
+      key: fileRecord.key,
+      size: fileRecord.size,
+      status: fileRecord.status,
+      isPublic: fileRecord.isPublic
+    } : 'No file found');
+
     if (!fileRecord) {
+      console.log('File not found in database for key:', fileKey);
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
@@ -61,9 +76,17 @@ export async function GET(
     }
 
     // Download file from storage
+    console.log('Attempting to download file from storage:', fileRecord.key);
     const downloadResult = await storageService.downloadFile(fileRecord.key);
 
+    console.log('Storage download result:', {
+      success: downloadResult.success,
+      error: downloadResult.error,
+      bufferSize: downloadResult.buffer?.length
+    });
+
     if (!downloadResult.success) {
+      console.error('Storage download failed:', downloadResult.error);
       return NextResponse.json(
         { error: `Download failed: ${downloadResult.error}` },
         { status: 500 }

@@ -28,7 +28,8 @@
     "all": "الكل",
     "none": "لا شيء",
     "required": "مطلوب",
-    "optional": "اختياري"
+    "optional": "اختياري",
+    "actions": "الإجراءات"
   },
   "navigation": {
     "dashboard": "لوحة التحكم",
@@ -124,6 +125,7 @@
     "createdAt": "تاريخ الإنشاء",
     "modules": "الوحدات",
     "enrollments": "التسجيلات",
+    "files": "الملفات",
     "draft": "مسودة",
     "published": "منشورة",
     "archived": "مؤرشفة",
@@ -136,7 +138,46 @@
     "h5p": "H5P",
     "scorm": "SCORM",
     "pdf": "PDF",
-    "quiz": "اختبار"
+    "quiz": "اختبار",
+    "searchPlaceholder": "البحث في الدورات...",
+    "viewDetails": "عرض التفاصيل",
+    "preview": "معاينة",
+    "basicInfo": "المعلومات الأساسية",
+    "basicInfoDescription": "قم بتحديث المعلومات الأساسية للدورة أدناه",
+    "modulesDescription": "إدارة وحدات الدورة والمحتوى التعليمي",
+    "filesDescription": "رفع وإدارة ملفات الدورة والموارد",
+    "courseSettings": "إعدادات الدورة",
+    "settingsDescription": "التكوين المتقدم وإعدادات الدورة",
+    "previewDescription": "معاينة كيفية ظهور الدورة للمتعلمين",
+    "dangerZone": "منطقة الخطر",
+    "updateSuccess": "تم تحديث الدورة بنجاح",
+    "saving": "جاري الحفظ...",
+    "noModules": "لا توجد وحدات",
+    "noFiles": "لا توجد ملفات",
+    "editModule": "تعديل الوحدة",
+    "editModuleDescription": "تحديث معلومات الوحدة",
+    "addModuleDescription": "إضافة وحدة جديدة لهذه الدورة",
+    "moduleUri": "رابط/مسار الوحدة",
+    "descriptionAr": "الوصف (عربي)",
+    "descriptionEn": "الوصف (إنجليزي)",
+    "contentType": "نوع المحتوى",
+    "urlLink": "رابط/URL",
+    "uploadFile": "رفع ملف",
+    "uploadModuleFile": "رفع ملف الوحدة",
+    "clickToUpload": "انقر لرفع الملف",
+    "supportedFormats": "الصيغ المدعومة",
+    "uploadedFile": "الملف المرفوع",
+    "fileReady": "الملف جاهز"
+  },
+  "files": {
+    "dragDropFiles": "اسحب الملفات هنا، أو انقر للاختيار",
+    "supportedFormats": "PDF، DOC، XLS، PPT، MP3، MP4، الصور",
+    "selectFiles": "اختيار الملفات",
+    "maxFileSize": "الحد الأقصى لحجم الملف",
+    "maxFiles": "الحد الأقصى للملفات",
+    "uploadProgress": "تقدم الرفع",
+    "clearCompleted": "مسح المكتملة",
+    "uploading": "جاري الرفع"
   },
   "exams": {
     "title": "الاختبارات",
@@ -249,6 +290,11 @@
     "positive": "يجب أن يكون رقماً موجباً",
     "futureDate": "يجب أن يكون تاريخاً مستقبلياً",
     "pastDate": "يجب أن يكون تاريخاً ماضياً"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات",
+    "viewAll": "عرض الكل"
   },
   "errors": {
     "generic": "حدث خطأ غير متوقع",

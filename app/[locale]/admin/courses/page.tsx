@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -44,13 +44,17 @@ type Course = {
   _count: {
     enrollments: number;
     modules: number;
+    files: number;
   };
 };
 
 export default function CoursesPage() {
   const t = useTranslations();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: coursesData, isLoading } = useQuery({
     queryKey: ['courses'],
@@ -62,6 +66,31 @@ export default function CoursesPage() {
       return response.json();
     },
   });
+
+  const handleDeleteCourse = async () => {
+    if (!courseToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/courses/${courseToDelete.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete course');
+      }
+      
+      // Refresh the courses list
+      await queryClient.invalidateQueries({ queryKey: ['courses'] });
+      setCourseToDelete(null);
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      alert('Failed to delete course. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const columns: ColumnDef<Course>[] = [
     {
@@ -136,6 +165,13 @@ export default function CoursesPage() {
       ),
     },
     {
+      id: 'files',
+      header: t('courses.files'),
+      cell: ({ row }) => (
+        <div className="text-center">{row.original._count.files}</div>
+      ),
+    },
+    {
       accessorKey: 'createdAt',
       header: t('courses.createdAt'),
       cell: ({ row }) => formatDate(row.getValue('createdAt')),
@@ -153,10 +189,10 @@ export default function CoursesPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setSelectedCourse(course)}>
                 <Eye className="mr-2 h-4 w-4" />
-                View Details
+                {t('courses.viewDetails')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(`/admin/courses/${course.id}/editor`)}>
                 <Edit className="mr-2 h-4 w-4" />
@@ -164,10 +200,13 @@ export default function CoursesPage() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(`/admin/courses/${course.id}/preview`)}>
                 <Play className="mr-2 h-4 w-4" />
-                Preview
+                {t('courses.preview')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem 
+                className="text-destructive"
+                onClick={() => setCourseToDelete(course)}
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 {t('common.delete')}
               </DropdownMenuItem>
@@ -223,7 +262,7 @@ export default function CoursesPage() {
             columns={columns}
             data={coursesData?.courses || []}
             searchKey="titleAr"
-            searchPlaceholder="Search courses..."
+            searchPlaceholder={t('courses.searchPlaceholder')}
           />
         </CardContent>
       </Card>
@@ -260,6 +299,22 @@ export default function CoursesPage() {
                   <label className="text-sm font-medium">Duration</label>
                   <p className="text-sm text-muted-foreground">{formatDuration(selectedCourse.durationMins)}</p>
                 </div>
+                <div>
+                  <label className="text-sm font-medium">Enrollments</label>
+                  <p className="text-sm text-muted-foreground">{selectedCourse._count.enrollments}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Modules</label>
+                  <p className="text-sm text-muted-foreground">{selectedCourse._count.modules}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Files</label>
+                  <p className="text-sm text-muted-foreground">{selectedCourse._count.files}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Created</label>
+                  <p className="text-sm text-muted-foreground">{formatDate(selectedCourse.createdAt)}</p>
+                </div>
               </div>
               {selectedCourse.summaryAr && (
                 <div>
@@ -273,6 +328,36 @@ export default function CoursesPage() {
                   <p className="text-sm text-muted-foreground">{selectedCourse.summaryEn}</p>
                 </div>
               )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {courseToDelete && (
+        <Dialog open={!!courseToDelete} onOpenChange={() => setCourseToDelete(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Course</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{courseToDelete.titleAr}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end space-x-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setCourseToDelete(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleDeleteCourse}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
