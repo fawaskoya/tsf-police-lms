@@ -597,16 +597,105 @@ export default function CourseEditorPage() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            // View file details in a more detailed dialog
+                            const details = `
+File Details:
+• Name: ${file.filename}
+• Size: ${formatFileSize(file.size)}
+• Type: ${file.fileType}
+• Status: ${file.status}
+• Downloads: ${file.downloadCount}
+• Uploaded by: ${file.uploader.firstName} ${file.uploader.lastName}
+• Upload date: ${formatDate(file.createdAt)}
+• Public: ${file.isPublic ? 'Yes' : 'No'}
+• Key: ${file.key}
+                            `.trim();
+                            console.log('View file details:', file);
+                            alert(details);
+                          }}
+                          title="View Details"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              console.log('Downloading file:', file);
+                              const response = await fetch(`/api/files/${file.key}`, {
+                                credentials: 'include',
+                              });
+                              
+                              if (!response.ok) {
+                                throw new Error(`Download failed: HTTP ${response.status} ${response.statusText}`);
+                              }
+                              
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = file.filename;
+                              document.body.appendChild(a);
+                              a.click();
+                              document.body.removeChild(a);
+                              window.URL.revokeObjectURL(url);
+                            } catch (error) {
+                              console.error('Download error:', error);
+                              alert(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                            }
+                          }}
+                          title="Download"
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            // Settings/Edit file
+                            console.log('Edit file settings:', file);
+                            alert(`Edit settings for: ${file.filename}\n(This feature can be expanded)`);
+                          }}
+                          title="Settings"
+                        >
                           <Settings className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            if (confirm(`Are you sure you want to delete "${file.filename}"?`)) {
+                              try {
+                                console.log('Deleting file:', file);
+                                const response = await fetch(`/api/files/${file.key}`, {
+                                  method: 'DELETE',
+                                  credentials: 'include',
+                                });
+                                
+                                if (!response.ok) {
+                                  const errorData = await response.json().catch(() => ({}));
+                                  throw new Error(errorData.error || `Delete failed: HTTP ${response.status} ${response.statusText}`);
+                                }
+                                
+                                const result = await response.json();
+                                console.log('Delete result:', result);
+                                alert(`File "${file.filename}" deleted successfully!`);
+                                
+                                // Refresh the files list
+                                window.location.reload();
+                              } catch (error) {
+                                console.error('Delete error:', error);
+                                alert(`Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                              }
+                            }
+                          }}
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

@@ -84,7 +84,9 @@ export function FileManager({
         if (fileType) params.append('fileType', fileType);
         if (status) params.append('status', status);
 
-        const response = await fetch(`/api/files?${params}`);
+        const response = await fetch(`/api/files?${params}`, {
+          credentials: 'include',
+        });
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
@@ -106,6 +108,7 @@ export function FileManager({
         const response = await fetch('/api/files', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ fileIds }),
         });
         if (!response.ok) {

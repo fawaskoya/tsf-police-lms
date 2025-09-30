@@ -188,7 +188,25 @@ export default async function FilesPage() {
             </Card>
           }>
             <FileManagerErrorBoundary>
-              <FileManager showUpload={canUploadFiles} />
+              <FileManager 
+                showUpload={canUploadFiles} 
+                onFileSelect={(file) => {
+                  // View file details
+                  const details = `
+File Details:
+• Name: ${file.filename}
+• Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB
+• Type: ${file.fileType}
+• Status: ${file.status}
+• Downloads: ${file.downloadCount}
+• Uploaded by: ${file.uploader.firstName} ${file.uploader.lastName}
+• Upload date: ${new Date(file.createdAt).toLocaleDateString()}
+• Public: ${file.isPublic ? 'Yes' : 'No'}
+• Key: ${file.key}
+                  `.trim();
+                  alert(details);
+                }}
+              />
             </FileManagerErrorBoundary>
           </Suspense>
         </TabsContent>
