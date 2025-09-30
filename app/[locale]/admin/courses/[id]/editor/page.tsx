@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,6 +86,7 @@ type FileObject = {
 
 export default function CourseEditorPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
@@ -301,7 +302,7 @@ export default function CourseEditorPage() {
           </Badge>
           <Button
             variant="outline"
-            onClick={() => router.push(`/admin/courses/${courseId}/preview`)}
+            onClick={() => router.push(`/${locale}/admin/courses/${courseId}/preview`)}
           >
             <Eye className="mr-2 h-4 w-4" />
             {t('courses.preview')}

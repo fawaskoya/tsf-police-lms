@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,7 @@ const STEPS = [
 
 export default function NewCoursePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -71,7 +72,7 @@ export default function NewCoursePage() {
       });
 
       if (response.ok) {
-        router.push('/admin/courses');
+        router.push(`/${locale}/admin/courses`);
       } else {
         console.error('Failed to create course');
       }
@@ -105,7 +106,7 @@ export default function NewCoursePage() {
             Create a new training course
           </p>
         </div>
-        <Button variant="outline" onClick={() => router.push('/admin/courses')}>
+        <Button variant="outline" onClick={() => router.push(`/${locale}/admin/courses`)}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Courses
         </Button>

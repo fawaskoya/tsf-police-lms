@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,6 +50,7 @@ type Course = {
 
 export default function CoursesPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -194,11 +195,11 @@ export default function CoursesPage() {
                 <Eye className="mr-2 h-4 w-4" />
                 {t('courses.viewDetails')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/admin/courses/${course.id}/editor`)}>
+              <DropdownMenuItem onClick={() => router.push(`/${locale}/admin/courses/${course.id}/editor`)}>
                 <Edit className="mr-2 h-4 w-4" />
                 {t('common.edit')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/admin/courses/${course.id}/preview`)}>
+              <DropdownMenuItem onClick={() => router.push(`/${locale}/admin/courses/${course.id}/preview`)}>
                 <Play className="mr-2 h-4 w-4" />
                 {t('courses.preview')}
               </DropdownMenuItem>
@@ -243,7 +244,7 @@ export default function CoursesPage() {
             Manage training courses and learning content
           </p>
         </div>
-        <Button onClick={() => router.push('/admin/courses/new')}>
+        <Button onClick={() => router.push(`/${locale}/admin/courses/new`)}>
           <Plus className="mr-2 h-4 w-4" />
           {t('courses.newCourse')}
         </Button>
