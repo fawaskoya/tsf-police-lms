@@ -190,11 +190,30 @@ export default async function FilesPage() {
             <FileManagerErrorBoundary>
               <FileManager 
                 showUpload={canUploadFiles} 
-                onFileSelect={(file) => {
-                  // Open file preview in new tab
-                  const previewUrl = `/api/files/${file.key}/preview`;
-                  console.log('Opening file preview:', previewUrl);
-                  window.open(previewUrl, '_blank');
+                onFileSelect={async (file) => {
+                  try {
+                    // Fetch file with authentication and open in new tab
+                    const previewUrl = `/api/files/${file.key}/preview`;
+                    console.log('Opening file preview:', previewUrl);
+                    
+                    const response = await fetch(previewUrl, {
+                      credentials: 'include',
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error(`Preview failed: HTTP ${response.status} ${response.statusText}`);
+                    }
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                    
+                    // Clean up the object URL after a delay
+                    setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+                  } catch (error) {
+                    console.error('Preview error:', error);
+                    alert(`Preview failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                  }
                 }}
               />
             </FileManagerErrorBoundary>
