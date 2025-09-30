@@ -84,7 +84,7 @@ export function FileUpload({
     }
 
     setUploading(false);
-  }, [courseId, moduleId, isPublic]);
+  }, [courseId, moduleId, isPublic, uploadFile]);
 
   const uploadFile = async (file: File, fileId: string) => {
     const formData = new FormData();

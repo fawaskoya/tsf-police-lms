@@ -9,7 +9,7 @@ import {
   Archive, 
   Search,
   Download,
-  Restore,
+  RotateCcw,
   Calendar,
   User,
   FileText,
@@ -184,7 +184,7 @@ export default async function ArchivePage() {
                         Download
                       </Button>
                       <Button variant="outline" size="sm">
-                        <Restore className="mr-2 h-4 w-4" />
+                        <RotateCcw className="mr-2 h-4 w-4" />
                         {t('dashboard.restoreContent')}
                       </Button>
                     </div>

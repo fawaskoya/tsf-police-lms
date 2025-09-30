@@ -84,7 +84,7 @@ export default function ErrorsPage() {
       setFilteredErrors(mockErrors);
       setLoading(false);
     }, 1000);
-  }, []);
+  }, [mockErrors]);
 
   useEffect(() => {
     let filtered = errors;

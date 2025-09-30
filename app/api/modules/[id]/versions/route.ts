@@ -26,12 +26,12 @@ export async function POST(
     const { version, uri, metadata, changeLog } = createModuleVersionSchema.parse(body);
 
     // Check if module exists
-    const module = await db.module.findUnique({
+    const moduleRecord = await db.module.findUnique({
       where: { id: moduleId },
       include: { course: true },
     });
 
-    if (!module) {
+    if (!moduleRecord) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 });
     }
 
@@ -89,11 +89,11 @@ export async function GET(
     const moduleId = params.id;
 
     // Check if module exists
-    const module = await db.module.findUnique({
+    const moduleRecord = await db.module.findUnique({
       where: { id: moduleId },
     });
 
-    if (!module) {
+    if (!moduleRecord) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 });
     }
 
