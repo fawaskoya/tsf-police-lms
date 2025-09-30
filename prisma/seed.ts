@@ -1,4 +1,4 @@
-import { PrismaClient, UserStatus, CourseStatus, CourseModality, QuestionType, ModuleKind } from '@prisma/client';
+import { PrismaClient, UserStatus, CourseStatus, CourseModality, QuestionType, ModuleKind, FileType, FileStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -326,8 +326,8 @@ async function main() {
       size: 2048576, // 2MB
       checksum: 'abc123def456',
       contentType: 'application/pdf',
-      fileType: 'PDF',
-      status: 'PROCESSED',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
       metadata: { pages: 150, author: 'TSF Police Training Department' },
       uploaderId: superAdmin.id,
       courseId: createdCourses[0].id,
@@ -341,8 +341,8 @@ async function main() {
       size: 15728640, // 15MB
       checksum: 'def456ghi789',
       contentType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      fileType: 'PPT',
-      status: 'PROCESSED',
+      fileType: FileType.PPT,
+      status: FileStatus.PROCESSED,
       metadata: { slides: 25, duration: '45 minutes' },
       uploaderId: admin.id,
       courseId: createdCourses[1].id,
@@ -356,8 +356,8 @@ async function main() {
       size: 1048576, // 1MB
       checksum: 'ghi789jkl012',
       contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      fileType: 'DOC',
-      status: 'PROCESSED',
+      fileType: FileType.DOC,
+      status: FileStatus.PROCESSED,
       metadata: { pages: 80, lastUpdated: '2024-01-15' },
       uploaderId: instructor.id,
       courseId: createdCourses[0].id,
@@ -371,8 +371,8 @@ async function main() {
       size: 524288, // 512KB
       checksum: 'jkl012mno345',
       contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      fileType: 'XLS',
-      status: 'PROCESSED',
+      fileType: FileType.XLS,
+      status: FileStatus.PROCESSED,
       metadata: { sheets: 3, rows: 150 },
       uploaderId: admin.id,
       isPublic: true,
@@ -385,8 +385,8 @@ async function main() {
       size: 8388608, // 8MB
       checksum: 'mno345pqr678',
       contentType: 'audio/mpeg',
-      fileType: 'MP3',
-      status: 'PROCESSED',
+      fileType: FileType.MP3,
+      status: FileStatus.PROCESSED,
       metadata: { duration: '12:30', bitrate: '128kbps' },
       uploaderId: instructor.id,
       courseId: createdCourses[1].id,
@@ -400,8 +400,8 @@ async function main() {
       size: 52428800, // 50MB
       checksum: 'pqr678stu901',
       contentType: 'video/mp4',
-      fileType: 'MP4',
-      status: 'PROCESSED',
+      fileType: FileType.MP4,
+      status: FileStatus.PROCESSED,
       metadata: { duration: '15:45', resolution: '1920x1080', fps: 30 },
       uploaderId: commander.id,
       courseId: createdCourses[2].id,
@@ -415,8 +415,8 @@ async function main() {
       size: 2097152, // 2MB
       checksum: 'stu901vwx234',
       contentType: 'image/jpeg',
-      fileType: 'IMAGE',
-      status: 'PROCESSED',
+      fileType: FileType.IMAGE,
+      status: FileStatus.PROCESSED,
       metadata: { width: 1024, height: 1024, format: 'JPEG' },
       uploaderId: admin.id,
       isPublic: false,
@@ -429,8 +429,8 @@ async function main() {
       size: 3145728, // 3MB
       checksum: 'vwx234yza567',
       contentType: 'application/pdf',
-      fileType: 'PDF',
-      status: 'PROCESSED',
+      fileType: FileType.PDF,
+      status: FileStatus.PROCESSED,
       metadata: { pages: 200, version: '2.1' },
       uploaderId: superAdmin.id,
       courseId: createdCourses[0].id,
