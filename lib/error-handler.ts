@@ -15,6 +15,7 @@ export class ValidationError extends Error {
   code = 'VALIDATION_ERROR';
   isOperational = true;
   errorContext: any;
+  timestamp: string;
 
   constructor(message: string, context?: any) {
     super(message);
