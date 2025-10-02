@@ -3,7 +3,7 @@ import { getRequestConfig } from 'next-intl/server';
 import { cookies } from 'next/headers';
 
 // Can be imported from a shared config
-const locales = ['ar', 'en'];
+const locales = ['en', 'ar'];
 const defaultLocale = 'en';
 
 export default getRequestConfig(async ({ requestLocale }) => {
