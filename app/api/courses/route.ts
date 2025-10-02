@@ -13,6 +13,14 @@ const createCourseSchema = z.object({
   summaryEn: z.string().optional(),
   modality: z.enum(['ELearning', 'Classroom', 'Blended']),
   durationMins: z.number().min(1),
+  modules: z.array(z.object({
+    title: z.string().min(1),
+    kind: z.string(),
+    uri: z.string().min(1),
+    durationMins: z.number().min(1),
+    order: z.number(),
+    contentType: z.string().optional(),
+  })).optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -85,10 +93,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Extract modules from validatedData
+    const { modules, ...courseData } = validatedData;
+
     const course = await db.course.create({
       data: {
-        ...validatedData,
+        ...courseData,
         createdById: session.user.id,
+        // Create modules if provided
+        modules: modules ? {
+          create: modules.map(module => ({
+            title: module.title,
+            kind: module.kind as any,
+            uri: module.uri,
+            durationMins: module.durationMins,
+            order: module.order,
+            isActive: true,
+            version: 1,
+          }))
+        } : undefined,
       },
       include: {
         _count: {
@@ -105,6 +128,25 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Update any temporary files that were uploaded during course creation
+    if (modules && modules.some(m => m.contentType === 'file')) {
+      const fileKeys = modules
+        .filter(m => m.contentType === 'file' && m.uri)
+        .map(m => m.uri);
+      
+      if (fileKeys.length > 0) {
+        await db.fileObject.updateMany({
+          where: {
+            key: { in: fileKeys },
+            courseId: 'temp', // Update files with temporary course ID
+          },
+          data: {
+            courseId: course.id,
+          },
+        });
+      }
+    }
 
     // Audit log
     await createAuditLog({
