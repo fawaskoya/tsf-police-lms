@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Upload, File, X } from 'lucide-react';
 import { CourseModality } from '@prisma/client';
 
 const STEPS = [
@@ -311,21 +311,103 @@ function ModulesStep({
     uri: '',
     durationMins: 30,
     title: '',
+    contentType: 'uri', // 'uri' or 'file'
+    uploadedFile: null as any,
+    uploadProgress: 0,
+    isUploading: false,
   });
 
   const addModule = () => {
-    if (newModule.uri && newModule.title) {
+    const hasContent = newModule.contentType === 'uri' ? newModule.uri : newModule.uploadedFile;
+    
+    if (hasContent && newModule.title) {
+      const moduleData = {
+        ...newModule,
+        order: formData.modules.length + 1,
+        uri: newModule.contentType === 'file' ? newModule.uploadedFile?.key || '' : newModule.uri,
+      };
+      
       setFormData({
         ...formData,
-        modules: [...formData.modules, { ...newModule, order: formData.modules.length + 1 }],
+        modules: [...formData.modules, moduleData],
       });
-      setNewModule({ kind: 'VIDEO', uri: '', durationMins: 30, title: '' });
+      
+      // Reset form
+      setNewModule({ 
+        kind: 'VIDEO', 
+        uri: '', 
+        durationMins: 30, 
+        title: '',
+        contentType: 'uri',
+        uploadedFile: null,
+        uploadProgress: 0,
+        isUploading: false,
+      });
     }
   };
 
   const removeModule = (index: number) => {
     const updatedModules = formData.modules.filter((_: any, i: number) => i !== index);
     setFormData({ ...formData, modules: updatedModules });
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadFile(file);
+    }
+  };
+
+  const uploadFile = async (file: File) => {
+    setNewModule(prev => ({ ...prev, isUploading: true, uploadProgress: 0 }));
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('metadata', JSON.stringify({ 
+        courseId: 'temp', // We'll update this when the course is created
+        isPublic: false 
+      }));
+
+      const response = await fetch('/api/files/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Upload failed: HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setNewModule(prev => ({ 
+          ...prev, 
+          uploadedFile: data.data,
+          uploadProgress: 100,
+          isUploading: false 
+        }));
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      setNewModule(prev => ({ 
+        ...prev, 
+        isUploading: false, 
+        uploadProgress: 0 
+      }));
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const removeUploadedFile = () => {
+    setNewModule(prev => ({ 
+      ...prev, 
+      uploadedFile: null, 
+      uploadProgress: 0 
+    }));
   };
 
   return (
@@ -373,16 +455,95 @@ function ModulesStep({
               />
             </div>
           </div>
+          {/* Content Type Selection */}
           <div className="space-y-2">
-            <Label>Content URI/Path</Label>
-            <Input
-              value={newModule.uri}
-              onChange={(e) => setNewModule({ ...newModule, uri: e.target.value })}
-              placeholder="/content/video.mp4 or URL"
-            />
+            <Label>Content Type</Label>
+            <Select
+              value={newModule.contentType}
+              onValueChange={(value) => setNewModule({ ...newModule, contentType: value as 'uri' | 'file' })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="uri">URI/URL</SelectItem>
+                <SelectItem value="file">Upload File</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Button onClick={addModule} disabled={!newModule.uri || !newModule.title}>
-            Add Module
+
+          {/* Content Input Based on Type */}
+          {newModule.contentType === 'uri' ? (
+            <div className="space-y-2">
+              <Label>Content URI/Path</Label>
+              <Input
+                value={newModule.uri}
+                onChange={(e) => setNewModule({ ...newModule, uri: e.target.value })}
+                placeholder="/content/video.mp4 or URL"
+              />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>Upload File</Label>
+              {!newModule.uploadedFile ? (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                  <input
+                    type="file"
+                    id="file-upload"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                    accept=".pdf,.mp4,.mp3,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-600">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      PDF, Video, Audio, Documents (max 50MB)
+                    </p>
+                  </label>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center space-x-3">
+                    <File className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm font-medium">{newModule.uploadedFile.filename}</p>
+                      <p className="text-xs text-gray-500">
+                        {(newModule.uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={removeUploadedFile}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              
+              {newModule.isUploading && (
+                <div className="space-y-2">
+                  <Progress value={newModule.uploadProgress} className="w-full" />
+                  <p className="text-sm text-gray-600">Uploading... {newModule.uploadProgress}%</p>
+                </div>
+              )}
+            </div>
+          )}
+          <Button 
+            onClick={addModule} 
+            disabled={
+              !newModule.title || 
+              newModule.isUploading ||
+              (newModule.contentType === 'uri' && !newModule.uri) ||
+              (newModule.contentType === 'file' && !newModule.uploadedFile)
+            }
+          >
+            {newModule.isUploading ? 'Uploading...' : 'Add Module'}
           </Button>
         </CardContent>
       </Card>
