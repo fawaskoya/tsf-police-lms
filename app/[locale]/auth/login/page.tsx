@@ -9,8 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LanguageSwitch } from '@/components/LanguageSwitch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Shield, GraduationCap, Users, Award } from 'lucide-react';
+import { Loader2, Shield, GraduationCap, Users, Award, Home, Info, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -181,6 +182,54 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white/95 backdrop-blur-sm border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href={`/${locale}`} className="flex items-center space-x-3 rtl:space-x-reverse">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-lg">TSF</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-primary">TSF Learning</h1>
+                <p className="text-xs text-muted-foreground">
+                  {locale === 'ar' ? 'نظام التعلم الإلكتروني' : 'Learning Management System'}
+                </p>
+              </div>
+            </Link>
+
+            {/* Navigation Items */}
+            <div className="hidden md:flex items-center space-x-6 rtl:space-x-reverse">
+              <Link href={`/${locale}`}>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Home className="h-4 w-4" />
+                  {t('navigation.home')}
+                </Button>
+              </Link>
+              <Link href={`/${locale}/about`}>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  {t('navigation.about')}
+                </Button>
+              </Link>
+              <Link href={`/${locale}/contact`}>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  {t('navigation.contact')}
+                </Button>
+              </Link>
+              <LanguageSwitch />
+            </div>
+
+            {/* Mobile Menu */}
+            <div className="md:hidden flex items-center space-x-2 rtl:space-x-reverse">
+              <LanguageSwitch />
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4 text-center">
