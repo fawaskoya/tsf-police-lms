@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
             durationMins: module.durationMins,
             order: module.order,
             isActive: true,
-            version: 1,
+            version: '1',
           }))
         } : undefined,
       },
