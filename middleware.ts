@@ -53,10 +53,39 @@ export default async function middleware(request: NextRequest) {
     const token = authToken ? await verifyJwtToken(authToken) : null;
     console.log('👤 User role:', token?.role || 'none');
 
-    // Check route access permissions
-    // Protect root route and dashboard routes
-    const isProtectedRoute = pathname === '/' || 
-      pathname.match(/^\/[a-z]{2}$/) ||  // locale root routes like /ar, /en
+    // Handle root route - redirect authenticated users to their dashboard
+    if (pathname === '/' || pathname.match(/^\/[a-z]{2}$/)) {
+      if (token) {
+        const localeMatch = pathname.match(/^\/([a-z]{2})/);
+        const locale = localeMatch ? localeMatch[1] : 'en';
+        
+        let dashboardPath = '/admin'; // default
+        switch (token.role) {
+          case 'super_admin':
+          case 'admin':
+            dashboardPath = '/admin';
+            break;
+          case 'instructor':
+            dashboardPath = '/instructor';
+            break;
+          case 'commander':
+            dashboardPath = '/commander';
+            break;
+          case 'trainee':
+            dashboardPath = '/trainee';
+            break;
+        }
+        
+        const dashboardUrl = new URL(`/${locale}${dashboardPath}`, request.url);
+        console.log(`✅ Authenticated - redirecting to ${dashboardPath}`);
+        return NextResponse.redirect(dashboardUrl);
+      }
+      // If not authenticated, allow access to homepage
+      console.log('🏠 Allowing access to homepage');
+    }
+
+    // Check route access permissions for protected routes
+    const isProtectedRoute = 
       pathname.match(/^\/[a-z]{2}\/admin/) || 
       pathname.match(/^\/[a-z]{2}\/commander/) || 
       pathname.match(/^\/[a-z]{2}\/instructor/) || 
@@ -77,34 +106,7 @@ export default async function middleware(request: NextRequest) {
       const userRole = token.role;
       const routePath = pathname.replace(/^\/[a-z]{2}/, '');
 
-      // Handle root route - redirect authenticated users to their dashboard
-      if (pathname === '/' || pathname.match(/^\/[a-z]{2}$/)) {
-        const localeMatch = pathname.match(/^\/([a-z]{2})/);
-        const locale = localeMatch ? localeMatch[1] : 'en';
-        
-        let dashboardPath = '/admin'; // default
-        switch (userRole) {
-          case 'super_admin':
-          case 'admin':
-            dashboardPath = '/admin';
-            break;
-          case 'instructor':
-            dashboardPath = '/instructor';
-            break;
-          case 'commander':
-            dashboardPath = '/commander';
-            break;
-          case 'trainee':
-            dashboardPath = '/trainee';
-            break;
-        }
-        
-        const dashboardUrl = new URL(`/${locale}${dashboardPath}`, request.url);
-        console.log(`✅ Authenticated - redirecting to ${dashboardPath}`);
-        return NextResponse.redirect(dashboardUrl);
-      }
-
-      // Check permissions for other protected routes
+      // Check permissions for protected routes
       const hasAccess = canAccessRoute(userRole, routePath);
       console.log(`🔐 Permission check for ${routePath}:`, hasAccess);
       
